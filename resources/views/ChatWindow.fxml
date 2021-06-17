@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="566.0"
+            prefWidth="752.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.unsa.etf.ugradbeni.controllers.ChatController">
+    <center>
+        <ScrollPane BorderPane.alignment="CENTER">
+            <content>
+                <VBox fx:id="ChatList" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                    <children>
+                        <Button mnemonicParsing="false" text="Button"/>
+
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+    <right>
+        <ScrollPane prefHeight="416.0" prefWidth="122.0" BorderPane.alignment="CENTER">
+            <content>
+                <VBox fx:id="UserList" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                      minHeight="-Infinity" minWidth="-Infinity">
+                    <children>
+                        <Label text="Suljo"/>
+                        <Label text="Sljagina fata"/>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </right>
+    <left>
+        <ScrollPane prefHeight="250.0" prefWidth="70.0" BorderPane.alignment="CENTER">
+            <content>
+                <VBox fx:id="RoomList">
+                    <children>
+                        <Button mnemonicParsing="false" text="SOBA1"/>
+                        <Button mnemonicParsing="false" text="SOBA2"/>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </left>
+    <bottom>
+        <GridPane BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="639.0" minWidth="10.0" prefWidth="631.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="369.0" minWidth="10.0" prefWidth="121.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <Button fx:id="SendMessage" defaultButton="true" mnemonicParsing="false" text="Send"
+                        GridPane.columnIndex="1"/>
+                <TextField fx:id="MessageField"/>
+            </children>
+        </GridPane>
+    </bottom>
+    <top>
+        <GridPane BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="166.0" minWidth="10.0" prefWidth="67.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="608.0" minWidth="10.0" prefWidth="563.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="243.0" minWidth="10.0" prefWidth="114.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <Label text="ROOMS" GridPane.rowIndex="1"/>
+                <Label text="CHATNAME" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="USERS ONLINE" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+            </children>
+        </GridPane>
+    </top>
+</BorderPane>
