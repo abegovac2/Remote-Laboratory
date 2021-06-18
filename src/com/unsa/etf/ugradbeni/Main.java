@@ -1,5 +1,6 @@
 package com.unsa.etf.ugradbeni;
 
+import com.unsa.etf.ugradbeni.controllers.ChatController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,10 +13,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("../../../../../resources/views/ChatWindow.fxml"));
-        primaryStage.setTitle("Remote Laboratory");
-        primaryStage.setScene(new Scene(root, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
-        primaryStage.show();
+        StageHandler.openNewWindow(getClass().getResource("/views/ChatWindow.fxml"),"Remote Laboratory",new ChatController());
+
+//        Parent root = FXMLLoader.load(getClass().getResource("/views/ChatWindow.fxml"));
+//        primaryStage.setTitle("Remote Laboratory");
+//        primaryStage.setScene(new Scene(root, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
+//        primaryStage.show();
     }
 
 

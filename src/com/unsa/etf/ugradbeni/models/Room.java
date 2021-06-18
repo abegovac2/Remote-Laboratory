@@ -29,8 +29,8 @@ public class Room {
 
     public static Room parseJSON(String jsonStr) {
         JSONObject obj = new JSONObject(jsonStr);
-        var roomId = obj.getInt("RoomId");
-        var roomName = obj.getString("RoomName");
+        int roomId = obj.getInt("RoomId");
+        String roomName = obj.getString("RoomName");
         return new Room(roomId, roomName);
     }
 

@@ -20,7 +20,7 @@ public class ChatUserMqtt extends MessagingClient{
 
     @Override
     protected void messageArrivedAction(String topic, MqttMessage mqttMessage) {
-        var msg = Message.parseJSON(new String(mqttMessage.getPayload()));
+        Message msg = Message.parseJSON(new String(mqttMessage.getPayload()));
 
         //adds users
         Label newMessage = new Label();
