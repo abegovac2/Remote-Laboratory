@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="anchorPane" prefHeight="463.0" prefWidth="818.0" style="-fx-background-color: #2A2E37;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+
+    <children>
+        <AnchorPane layoutX="454.0" layoutY="68.0" prefHeight="330.0" prefWidth="306.0" style="-fx-background-color: #9C2827;">
+            <children>
+                <VBox layoutX="44.0" layoutY="95.0" spacing="10.0">
+                    <children>
+                        <TextField fx:id="usernamefld" layoutX="44.0" layoutY="95.0" prefHeight="30.0" prefWidth="218.0" promptText="username" style="-fx-background-color: transparent; -fx-border-color: #ebebea;">
+                            <opaqueInsets>
+                                <Insets />
+                            </opaqueInsets></TextField>
+                    </children>
+                </VBox>
+                <Button cache="true" defaultButton="true" layoutX="100.0" layoutY="240.0" mnemonicParsing="false" onAction="#signinAction" prefHeight="30.0" prefWidth="107.0" stylesheets="@../css/dark-theme.css" text="Sign in" textFill="WHITE">
+                    <font>
+                        <Font size="19.0" />
+                    </font></Button>
+                <Label layoutX="122.0" layoutY="26.0" style="-fx-background-color: transparent;" text="Sign in" textFill="#fcfafa">
+                    <font>
+                        <Font size="21.0" />
+                    </font></Label>
+            </children>
+        </AnchorPane>
+        <ImageView fitHeight="465.0" fitWidth="394.0" opacity="0.45" pickOnBounds="true" preserveRatio="true">
+            <viewport>
+                <Rectangle2D height="650.0" width="550.0" />
+            </viewport>
+            <effect>
+                <InnerShadow blurType="GAUSSIAN" choke="0.28" height="255.0" radius="127.0" width="255.0" />
+            </effect>
+         <image>
+            <Image url="@../pictures/login.jpg" />
+         </image>
+        </ImageView>
+        <Label fx:id="welcome" layoutX="25.0" layoutY="137.0" text="Welcome to &#10;Remote Laboratory" textFill="WHITE" underline="true">
+            <font>
+                <Font name="System Bold" size="28.0" />
+            </font>
+        </Label>
+
+
+
+    </children>
+</AnchorPane>

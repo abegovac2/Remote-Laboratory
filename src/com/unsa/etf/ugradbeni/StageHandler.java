@@ -21,6 +21,7 @@ public class StageHandler {
             loader.setController(controller);
             Parent root = loader.load();
             parentStage.setTitle(title);
+            parentStage.setResizable(false);
             parentStage.setScene(new Scene(root,USE_COMPUTED_SIZE,USE_COMPUTED_SIZE));
             parentStage.show();
         } catch (IOException ex) {

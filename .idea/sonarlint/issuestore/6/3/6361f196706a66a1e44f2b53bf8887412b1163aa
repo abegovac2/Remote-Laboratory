@@ -1,0 +1,10 @@
+
+t	java:S116"SRename this field "ChatList" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(öË²¼øÿÿÿÿ8ë¢”‡¢/
+x	java:S116"WRename this field "MessageField" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(”«Ô‚üÿÿÿÿ8ë¢”‡¢/
+t	java:S116"SRename this field "RoomList" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¦¯¥¿ÿÿÿÿÿ8ë¢”‡¢/
+q	java:S116"VRename this field "SendMessage" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ëçì8ë¢”‡¢/
+H
+java:S1905$"&Remove this unnecessary cast to "int".(òîÄØýÿÿÿÿ8ë¢”‡¢/
+o	java:S116"SRename this field "UserList" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÚÈç•8ë¢”‡¢/
+£
+java:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(­Çš»ûÿÿÿÿ8þ‘¨ˆ¢/

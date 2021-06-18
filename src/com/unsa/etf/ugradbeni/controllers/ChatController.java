@@ -3,6 +3,7 @@ package com.unsa.etf.ugradbeni.controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
@@ -17,23 +18,24 @@ public class ChatController {
     public Button SendMessage;
     @FXML
     public TextField MessageField;
+    @FXML
+    public Label usernameLbl;
 
+
+    @FXML
+    public void initialize(){
+        usernameLbl.setText(LoginController.username);
+    }
 
     public ChatController(){
-
-
-
     }
+
 
     @FXML
     public void sendAction(ActionEvent actionEvent){
             RoomList.getChildren().add(new Button("Room " + (int)(RoomList.getChildren().size()+1)));
 
+
     }
-
-
-
-
-
 
 }

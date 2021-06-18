@@ -1,19 +1,15 @@
 package com.unsa.etf.ugradbeni;
 
 import com.unsa.etf.ugradbeni.controllers.ChatController;
+import com.unsa.etf.ugradbeni.controllers.LoginController;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        StageHandler.openNewWindow(getClass().getResource("/views/ChatWindow.fxml"),"Remote Laboratory",new ChatController());
+        StageHandler.openNewWindow(getClass().getResource("/views/LoginWindow.fxml"),"Remote Laboratory",new LoginController());
 
 //        Parent root = FXMLLoader.load(getClass().getResource("/views/ChatWindow.fxml"));
 //        primaryStage.setTitle("Remote Laboratory");

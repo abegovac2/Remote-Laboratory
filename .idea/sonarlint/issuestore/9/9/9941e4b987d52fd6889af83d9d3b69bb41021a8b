@@ -1,0 +1,11 @@
+
+G
+java:S1481+"*Remove this unused "stage" local variable.(ØşéØ8Ãÿö‚¢/
+I
+java:S1172",Remove this unused method parameter "title".(È½å8Ãÿö‚¢/
+\
+java:S1118":Add a private constructor to hide the implicit public one.(‚«§éùÿÿÿÿ8Ãÿö‚¢/
+N
+java:S1172",Remove this unused method parameter "title".(„û—øıÿÿÿÿ8×÷‚¢/
+V
+java:S1854+"9Remove this useless assignment to local variable "stage".(ØşéØ8Ãÿö‚¢/
