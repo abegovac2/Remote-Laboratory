@@ -8,8 +8,8 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
-        StageHandler.openNewWindow(getClass().getResource("/views/LoginWindow.fxml"),"Remote Laboratory",new LoginController());
+    public void start(Stage primaryStage) {
+        StageHandler.openNewWindow(getClass().getResource("/views/LoginWindow.fxml"), "Remote Laboratory", new LoginController());
 
 //        Parent root = FXMLLoader.load(getClass().getResource("/views/ChatWindow.fxml"));
 //        primaryStage.setTitle("Remote Laboratory");

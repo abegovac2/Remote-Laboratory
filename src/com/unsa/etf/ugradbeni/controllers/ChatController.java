@@ -23,17 +23,17 @@ public class ChatController {
 
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         usernameLbl.setText(LoginController.username);
     }
 
-    public ChatController(){
+    public ChatController() {
     }
 
 
     @FXML
-    public void sendAction(ActionEvent actionEvent){
-            RoomList.getChildren().add(new Button("Room " + (int)(RoomList.getChildren().size()+1)));
+    public void sendAction(ActionEvent actionEvent) {
+        RoomList.getChildren().add(new Button("Room " + (int) (RoomList.getChildren().size() + 1)));
 
 
     }

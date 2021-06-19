@@ -37,18 +37,10 @@ public class Message {
         this.roomId = roomId;
     }
 
-
-    public static Message parseJSON(String jsonStr){
-        JSONObject obj = new JSONObject(jsonStr);
-        String message = obj.getString("Message");
-        int roomId = obj.getInt("RoomId");
-        return new Message(-1, message, roomId);
-    }
-
     @Override
     public String toString() {
         return "{" +
-                "\"id\": " + id + "," +
+                "\"Id\": " + id + "," +
                 "\"Message\": \"" + message + "\" ," +
                 "\"RoomId\": " + roomId +
                 "}";

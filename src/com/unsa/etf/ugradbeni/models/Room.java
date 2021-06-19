@@ -27,13 +27,6 @@ public class Room {
         this.roomName = roomName;
     }
 
-    public static Room parseJSON(String jsonStr) {
-        JSONObject obj = new JSONObject(jsonStr);
-        int roomId = obj.getInt("RoomId");
-        String roomName = obj.getString("RoomName");
-        return new Room(roomId, roomName);
-    }
-
     @Override
     public String toString() {
         return "{" +

@@ -14,29 +14,29 @@ public class AlertMaker {
     public static void alertERROR(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
-        alert.setHeaderText("Došlo je do greške");
+        alert.setHeaderText("A login error has occurred!");
         alert.setContentText(content);
         styleAlert(alert);
         alert.showAndWait();
     }
-    public static void alertINFORMATION(String title, String content){
+
+    public static void alertINFORMATION(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Poruka");
+        alert.setTitle("Message");
         alert.setContentText(content);
         styleAlert(alert);
         alert.showAndWait();
     }
-    public static Optional<ButtonType> alertCONFIRMATION(String title, String content){
+
+    public static Optional<ButtonType> alertCONFIRMATION(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Potvrda");
+        alert.setTitle("Confirm");
         alert.setHeaderText(title);
-        alert.setContentText(content);styleAlert(alert);
+        alert.setContentText(content);
+        styleAlert(alert);
 
-        return  alert.showAndWait();
+        return alert.showAndWait();
     }
-
-
-
 
 
     private static void styleAlert(Alert alert) {

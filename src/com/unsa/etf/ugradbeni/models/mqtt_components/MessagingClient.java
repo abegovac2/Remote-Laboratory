@@ -1,8 +1,16 @@
 package com.unsa.etf.ugradbeni.models.mqtt_components;
 
+import com.unsa.etf.ugradbeni.models.MqttOnRecive;
 import org.eclipse.paho.client.mqttv3.*;
 
-public abstract class MessagingClient implements MqttCallback {
+import java.util.Map;
+
+public class MessagingClient implements MqttCallback {
+
+    private Map<String, MqttOnRecive> onReciveMap;
+
+
+
     private static final String brokerURL = "tcp://broker.hivemq.com:1883";
     private final MqttClient mqttClient;
     private final String clientId;
@@ -11,8 +19,9 @@ public abstract class MessagingClient implements MqttCallback {
         return clientId;
     }
 
-    public MessagingClient(String clientId) throws MqttException {
+    public MessagingClient(String clientId, Map<String, MqttOnRecive> onReciveMap) throws MqttException {
         this.clientId = clientId;
+        this.onReciveMap = onReciveMap;
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
 
@@ -56,13 +65,15 @@ public abstract class MessagingClient implements MqttCallback {
     public void messageArrived(String topic, MqttMessage mqttMessage) {
         synchronized (this.getClass()) {
 
-            messageArrivedAction(topic, mqttMessage);
+            String[] splitTopic = topic.split("/");
+            String key = splitTopic[splitTopic.length-2];
+
+            MqttOnRecive function = onReciveMap.get(key);
+
+            if(function != null) function.execute(topic, mqttMessage);
 
         }
     }
-
-    //all classes derived from this one does the same thing, except when dealing with arrived messages
-    protected abstract void messageArrivedAction(String topic, MqttMessage mqttMessage);
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
