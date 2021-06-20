@@ -3,12 +3,12 @@
 // SOBA3: Parking
 //
 
-#define SUBSETUP "project225883/us/etf/message/soba1/setup/mbed"
-#define SUBPARKING "project225883/us/etf/message/soba1/mbed/parking"
-#define SUBXPARKING "project225883/us/etf/message/soba1/mbed/exit"
+#define SUBSETUP "project225883/us/etf/message/soba3/setup/mbed"
+#define SUBPARKING "project225883/us/etf/message/soba3/mbed/parking"
+#define SUBXPARKING "project225883/us/etf/message/soba3/mbed/exit"
 
-#define PUBSETUP "project225883/us/etf/message/soba1/setup/mbed"
-#define PUBPARKING "project225883/us/etf/message/soba1/mbed/info"
+#define PUBSETUP "project225883/us/etf/message/soba3/setup/mbed"
+#define PUBPARKING "project225883/us/etf/message/soba3/mbed/info"
 
 #include "mbed.h"
 
