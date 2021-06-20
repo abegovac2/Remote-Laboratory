@@ -3,11 +3,12 @@
 // SOBA3: Parking
 //
 
-#define SUBPARKING "theme/parking"
-#define SUBXPARKING "theme/exit"
+#define SUBSETUP "project225883/us/etf/message/soba1/setup/mbed"
+#define SUBPARKING "project225883/us/etf/message/soba1/mbed/parking"
+#define SUBXPARKING "project225883/us/etf/message/soba1/mbed/exit"
 
-#define PUBPARKING "theme/info"
-
+#define PUBSETUP "project225883/us/etf/message/soba1/setup/mbed"
+#define PUBPARKING "project225883/us/etf/message/soba1/mbed/info"
 
 #include "mbed.h"
 
@@ -28,6 +29,12 @@ float ticket=0;
 int info=-1, info2=-1;
 int tmp_car=-1;
 int time_in_min=0;
+
+bool data_to_send=false;
+
+void subsetup_fun(MQTT::MessageData& md){
+    data_to_send=true;
+}
 
 void reset_system(){
     time_in_min=0;
@@ -120,6 +127,9 @@ int main(int argc, char* argv[])
         
     if ((rc = client.subscribe(SUBXPARKING, MQTT::QOS2, park_exit)) != 0)//
         printf("rc from MQTT subscribe is %d\r\n", rc);
+    
+    if ((rc = client.subscribe(SUBSETUP, MQTT::QOS2, subsetup_fun)) != 0)//
+        printf("rc from MQTT subscribe is %d\r\n", rc);
         
     MQTT::Message message;
 
@@ -147,9 +157,20 @@ int main(int argc, char* argv[])
             rc = client.publish(PUBPARKING, message);
             info2=-1, time_in_min=0;
         }
+        if(data_to_send){
+            data_to_send=false;
+            sprintf(buf, "{\"Topics\": [\"info\"]}");
+            message.qos = MQTT::QOS0;
+            message.retained = false;
+            message.dup = false;
+            message.payload = (void*)buf;
+            message.payloadlen = strlen(buf);
+            rc = client.publish(PUBSETUP, message);
+        } 
         
         rc = client.subscribe(SUBPARKING, MQTT::QOS0, park_action);
         rc = client.subscribe(SUBXPARKING, MQTT::QOS0, park_exit);
+        rc = client.subscribe(SUBSETUP, MQTT::QOS0, subsetup_fun);
         wait(1);
     }
 
