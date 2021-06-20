@@ -9,7 +9,13 @@ public class MessagingClient implements MqttCallback {
 
     private Map<String, MqttOnRecive> onReciveMap;
 
+    public void setOnReciveMap(Map<String, MqttOnRecive> onReciveMap) {
+        this.onReciveMap = onReciveMap;
+    }
 
+    public Map<String, MqttOnRecive> getOnReciveMap() {
+        return onReciveMap;
+    }
 
     private static final String brokerURL = "tcp://broker.hivemq.com:1883";
     private final MqttClient mqttClient;
@@ -70,7 +76,13 @@ public class MessagingClient implements MqttCallback {
 
             MqttOnRecive function = onReciveMap.get(key);
 
-            if(function != null) function.execute(topic, mqttMessage);
+            if(function != null) {
+                try {
+                    function.execute(topic, mqttMessage);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+            }
 
         }
     }
