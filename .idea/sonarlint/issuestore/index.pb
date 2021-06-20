@@ -1,16 +1,8 @@
 
-v
-Fsrc/com/unsa/etf/ugradbeni/models/mqtt_components/RoomManagerMqtt.java,8\5\85b9cb3306636dc888509fd181f87252e7d72d6d
-s
-Csrc/com/unsa/etf/ugradbeni/models/mqtt_components/ChatUserMqtt.java,c\9\c9ddb1f43d21d100511fa517822fc0d7d3a6f8da
 e
 5out/production/RemoteLaboratory/views/ChatWindow.fxml,8\1\816fd4fc4b9182ea24547fcaa3d4cd676ebf046c
 b
 2out/production/RemoteLaboratory/css/dark-theme.css,a\d\ad448d2665ec0b8d5b8cd54f6b3cea4c70a96ae7
-L
-resources/css/dark-theme.css,7\4\74c9d3a2e304a8b43ce174351f803f2362a0371d
-J
-.idea/libraries/javafx.xml,f\0\f01fa3cc38467805c9ad58fa176b2fe7146a6a5c
 G
 .idea/libraries/lib.xml,5\6\563a23e064e6fdd2d09bd0c2d99ef456aff71a31
 D
@@ -21,8 +13,6 @@ f
 +src/com/unsa/etf/ugradbeni/models/Room.java,a\9\a91d9b4a216b167783f277317101d794e7ecd1a1
 ^
 .src/com/unsa/etf/ugradbeni/models/Message.java,8\d\8d0ff6b911649be20fcd3f6ed2f4dd24b08b0d19
-w
-Gsrc/com/unsa/etf/ugradbeni/models/mqtt_components/UsersManagerMqtt.java,a\f\af83c9c9ff3d265c3b19c8307d73dc10b5e9855d
 T
 $src/com/unsa/etf/ugradbeni/Main.java,7\b\7baa282bdb62c387d901baefacc49f450cef9372
 \

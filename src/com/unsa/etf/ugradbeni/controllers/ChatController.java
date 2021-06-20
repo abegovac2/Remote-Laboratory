@@ -1,5 +1,7 @@
 package com.unsa.etf.ugradbeni.controllers;
 
+import com.unsa.etf.ugradbeni.alert.AlertMaker;
+import com.unsa.etf.ugradbeni.bubble.BubbledLabel;
 import com.unsa.etf.ugradbeni.models.Message;
 import com.unsa.etf.ugradbeni.models.MqttOnRecive;
 import com.unsa.etf.ugradbeni.models.Room;
@@ -65,8 +67,12 @@ public class ChatController {
     public void sendAction(ActionEvent actionEvent) {
         String message = messageContent.get().trim();
 
-        if (message.length() > 255) ; //ovdje dodaj neko upozorenje
-        if (message.isEmpty()) ; //ovdje dodaj neko upozorenje
+        if (message.length() > 255){
+            AlertMaker.alertINFORMATION("Notice","Message can't have more than 255 character.");
+        }
+        if (message.isEmpty()){
+            AlertMaker.alertERROR("","Message field is empty!");
+        }
         messageContent.set("");
         try {
             Message sendMessage = new Message(-1, "[" + username + "]: " + message, currentRoom.getId());
@@ -83,14 +89,19 @@ public class ChatController {
         functions.put("message", (String theme, MqttMessage mqttMessage) ->
                 new Thread(() -> {
                     try {
+                        // Button newMessage = new Button();
+                        BubbledLabel bl = new BubbledLabel();
+
                         //
                         //ovdje treba umjesto button-a stavit nesto drugo, tj.ljepse
                         //
-                        Button newMessage = new Button();
+
+
                         JSONObject msg = new JSONObject(new String(mqttMessage.getPayload()));
                         String text = msg.getString("Message");
-                        newMessage.setText(text);
-                        Platform.runLater(() -> ChatList.getChildren().add(newMessage));
+                        //newMessage.setText(text);
+                        bl.setText(text);
+                        Platform.runLater(() -> ChatList.getChildren().add(bl));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

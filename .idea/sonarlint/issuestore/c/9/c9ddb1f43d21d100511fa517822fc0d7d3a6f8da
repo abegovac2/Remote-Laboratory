@@ -1,7 +1,0 @@
-
-g
-java:S1128"NRemove this unused import 'com.unsa.etf.ugradbeni.controllers.ChatController'.(—˜§‘ýÿÿÿÿ
-k	java:S116"SRename this field "ChatList" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(úØ‹‰ùÿÿÿÿ
-T	java:S125"<This block of commented-out lines of code should be removed.(×’Û øÿÿÿÿ
-O	java:S125"<This block of commented-out lines of code should be removed.(˜¡Šš
-d	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(²§€ð

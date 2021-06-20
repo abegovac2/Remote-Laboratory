@@ -1,6 +1,7 @@
 package com.unsa.etf.ugradbeni;
 
 import com.unsa.etf.ugradbeni.controllers.ChatController;
+import com.unsa.etf.ugradbeni.controllers.GroupController;
 import com.unsa.etf.ugradbeni.controllers.LoginController;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -10,6 +11,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         StageHandler.openNewWindow(getClass().getResource("/views/LoginWindow.fxml"), "Remote Laboratory", new LoginController());
+      //  StageHandler.openNewWindow(getClass().getResource("/views/GroupWindow.fxml"), "Remote Laboratory", new GroupController());
 
 //        Parent root = FXMLLoader.load(getClass().getResource("/views/ChatWindow.fxml"));
 //        primaryStage.setTitle("Remote Laboratory");

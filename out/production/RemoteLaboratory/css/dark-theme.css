@@ -480,9 +480,23 @@
 }
 
 
+.flowpane{
+-fx-background-color: -fx-primary;
+    -fx-border-color: transparent;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+}
+
+.scrollpane2{
+    -fx-background-color: -fx-primary;
+    -fx-border-color: -fx-secondary;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+}
 
 .scroll-pane {
-    -fx-background-color: black;
+    -fx-background-color: -fx-primary;
+
 }
 
 .scroll-bar:horizontal, .scroll-bar:vertical{
@@ -506,3 +520,4 @@
     -fx-background-color: white;
     -fx-background-radius: 5em;
 }
+
