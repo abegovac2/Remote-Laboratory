@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
         }
         if(data_to_send){
             data_to_send=false;
-            sprintf(buf, "{\"Topics\": [\"guess\",\"info\"]}");
+            sprintf(buf, "{\"Topics\": [\"info\"]}");
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
