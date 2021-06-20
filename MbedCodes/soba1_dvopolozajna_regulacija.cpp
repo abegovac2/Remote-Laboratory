@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
         
         if (old_heater!=heater) {
             old_heater=heater;
-            sprintf(buf, "{\"Stanje grijaca\": \"%d\"}", heater);
+            sprintf(buf, "{\"Stanje\": \"Stanje grijaca: %d\"}", heater);
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
         }
         if(mqqt_wants_time){
             mqqt_wants_time=false;
-            sprintf(buf, "{\"Sistem u pripravnosti\": \"%d\"}", running_time_in_minutes);
+            sprintf(buf, "{\"Stanje\": \"Sistem u pripravnosti: %d minuta\"}", running_time_in_minutes);
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
         }
         if(data_to_send){
             data_to_send=false;
-            sprintf(buf, "{\"Topics\": ["heater","time"]}");
+            sprintf(buf, "{\"Topics\": [\"heater\",\"time\"]}");
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
