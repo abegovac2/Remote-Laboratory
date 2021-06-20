@@ -4,10 +4,10 @@
 //
 
 #define SUBSETUP "project225883/us/etf/message/soba2/setup/mbed"
-#define SUBGUESS "project225883/us/etf/message/soba1/mbed/guess"
+#define SUBGUESS "project225883/us/etf/message/soba2/mbed/guess"
 
 #define PUBSETUP "project225883/us/etf/message/soba2/setup/mbed"
-#define PUBGAMEINFO "project225883/us/etf/message/soba1/mbed/info"
+#define PUBGAMEINFO "project225883/us/etf/message/soba2/mbed/info"
 
 #include "mbed.h"
 #define MQTTCLIENT_QOS2 0
