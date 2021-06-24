@@ -12,6 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         StageHandler.openNewWindow(getClass().getResource("/views/LoginWindow.fxml"), "Remote Laboratory", new LoginController());
       //  StageHandler.openNewWindow(getClass().getResource("/views/GroupWindow.fxml"), "Remote Laboratory", new GroupController());
+      //  StageHandler.openNewWindow(getClass().getResource("/views/ChatWindow.fxml"), "Remote Laboratory", new ChatController("",null,null));
 
 //        Parent root = FXMLLoader.load(getClass().getResource("/views/ChatWindow.fxml"));
 //        primaryStage.setTitle("Remote Laboratory");
