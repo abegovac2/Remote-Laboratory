@@ -3,11 +3,13 @@
 // SOBA1: Dvopoložajna regulacija temperature
 //
 
-#define SUBNTCVOLTAGE "theme/ntcvoltage"
-#define SUBRUNNINGTIME "theme/timewant"
+#define SUBSETUP "project225883/us/etf/message/soba1/setup/mbed"
+#define SUBNTCVOLTAGE "theme/ntcvoltage" //needed for simulating physical input of ntc voltage
+#define SUBRUNNINGTIME "project225883/us/etf/message/soba1/mbed/timewant"
 
-#define PUBHEATERSTATE "theme/heater"
-#define PUBRUNNINGTIME "theme/time"
+#define PUBSETUP "project225883/us/etf/message/soba1/setup/mbed"
+#define PUBHEATERSTATE "project225883/us/etf/message/soba1/mbed/heater"
+#define PUBRUNNINGTIME "project225883/us/etf/message/soba1/mbed/time"
 
 #include "mbed.h"
 
@@ -27,7 +29,11 @@ float v_ntc;
 bool heater=false;
 int block_of_30min=0;
 bool mqqt_wants_time=false;
+bool data_to_send=false;
 
+void subsetup_fun(MQTT::MessageData& md){
+    data_to_send=true;
+}
 
 void heater_regulation(MQTT::MessageData& md)
 {
@@ -110,6 +116,9 @@ int main(int argc, char* argv[])
         
     if ((rc = client.subscribe(SUBRUNNINGTIME, MQTT::QOS2, wantTime)) != 0)//
         printf("rc from MQTT subscribe is %d\r\n", rc);
+    
+    if ((rc = client.subscribe(SUBSETUP, MQTT::QOS2, subsetup_fun)) != 0)//
+        printf("rc from MQTT subscribe is %d\r\n", rc);
         
     MQTT::Message message;
 
@@ -118,12 +127,12 @@ int main(int argc, char* argv[])
     bool old_heater=false;
     while(1) {
         led1 = heater; 
-        if(heater) dc_dimmer=1; //3.3 na ulaz dimmera
+        if(heater) dc_dimmer=1; //output 3.3V for DC dimmer INPUT
         else dc_dimmer=0;
         
         if (old_heater!=heater) {
             old_heater=heater;
-            sprintf(buf, "{\"Stanje grijaca\": %d}", heater);
+            sprintf(buf, "{\"Stanje\": \"Stanje grijaca: %d\"}", heater);
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -133,7 +142,7 @@ int main(int argc, char* argv[])
         }
         if(mqqt_wants_time){
             mqqt_wants_time=false;
-            sprintf(buf, "{\"Sistem u pripravnosti\": %d}", running_time_in_minutes);
+            sprintf(buf, "{\"Stanje\": \"Sistem u pripravnosti: %d minuta\"}", running_time_in_minutes);
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -141,10 +150,20 @@ int main(int argc, char* argv[])
             message.payloadlen = strlen(buf);
             rc = client.publish(PUBRUNNINGTIME, message);
         }
-        
+        if(data_to_send){
+            data_to_send=false;
+            sprintf(buf, "{\"Topics\": [\"heater\",\"time\"]}");
+            message.qos = MQTT::QOS0;
+            message.retained = false;
+            message.dup = false;
+            message.payload = (void*)buf;
+            message.payloadlen = strlen(buf);
+            rc = client.publish(PUBSETUP, message);
+        }        
         
         rc = client.subscribe(SUBNTCVOLTAGE, MQTT::QOS0, heater_regulation);
         rc = client.subscribe(SUBRUNNINGTIME, MQTT::QOS0, wantTime);
+        rc = client.subscribe(SUBSETUP, MQTT::QOS0, subsetup_fun);
         wait(1);
     }
 

@@ -3,11 +3,14 @@
 // SOBA3: Parking
 //
 
-#define SUBPARKING "theme/parking"
-#define SUBXPARKING "theme/exit"
+#define SUBSETUP "project225883/us/etf/message/soba3/setup/mbed"
+#define SUBPARKING "project225883/us/etf/message/soba3/mbed/parking"
+#define SUBXPARKING "project225883/us/etf/message/soba3/mbed/exit"
+#define SUBRUNNINGTIME "project225883/us/etf/message/soba3/mbed/timewant"
 
-#define PUBPARKING "theme/info"
-
+#define PUBSETUP "project225883/us/etf/message/soba3/setup/mbed"
+#define PUBPARKING "project225883/us/etf/message/soba3/mbed/info"
+#define PUBRUNNINGTIME "project225883/us/etf/message/soba3/mbed/time"
 
 #include "mbed.h"
 
@@ -19,15 +22,25 @@
 #include "MQTTClient.h"
 #include <string.h>
 
+Ticker check30min;
+Timer time_running;
 Timer park_place[20];
 //Ticker check_30_min[20];
 int park_place_taken[20];
 int block_30_min[20];
+int block_of_30min=0;
 
 float ticket=0;
 int info=-1, info2=-1;
 int tmp_car=-1;
 int time_in_min=0;
+
+bool mqqt_wants_time=false;
+bool data_to_send=false;
+
+void subsetup_fun(MQTT::MessageData& md){
+    data_to_send=true;
+}
 
 void reset_system(){
     time_in_min=0;
@@ -83,8 +96,26 @@ void check_30_min_fun(int place){
     park_place[place].start();
 }
 */
+
+void wantTime(MQTT::MessageData& md){
+    // kod
+    mqqt_wants_time=true;
+}
+
+int running_time_in_minutes(){
+    return block_of_30min*30+time_running.read()/60;
+}
+
+void check30min_fun(){
+    time_running.stop();
+    block_of_30min++;
+    time_running.start();
+}
+
 int main(int argc, char* argv[])
 {
+    time_running.start();
+    check30min.attach(&check30min_fun, 30*60);
     reset_system();    
     printf("Ugradbeni sistemi\r\n");
     printf("SOBA 3: Parking\r\n\r\n");
@@ -120,6 +151,12 @@ int main(int argc, char* argv[])
         
     if ((rc = client.subscribe(SUBXPARKING, MQTT::QOS2, park_exit)) != 0)//
         printf("rc from MQTT subscribe is %d\r\n", rc);
+    
+    if ((rc = client.subscribe(SUBSETUP, MQTT::QOS2, subsetup_fun)) != 0)//
+        printf("rc from MQTT subscribe is %d\r\n", rc);
+        
+    if ((rc = client.subscribe(SUBRUNNINGTIME, MQTT::QOS2, wantTime)) != 0)//
+        printf("rc from MQTT subscribe is %d\r\n", rc);
         
     MQTT::Message message;
 
@@ -147,9 +184,31 @@ int main(int argc, char* argv[])
             rc = client.publish(PUBPARKING, message);
             info2=-1, time_in_min=0;
         }
+        if(data_to_send){
+            data_to_send=false;
+            sprintf(buf, "{\"Topics\": [\"info\"]}");
+            message.qos = MQTT::QOS0;
+            message.retained = false;
+            message.dup = false;
+            message.payload = (void*)buf;
+            message.payloadlen = strlen(buf);
+            rc = client.publish(PUBSETUP, message);
+        } 
+        if(mqqt_wants_time){
+            mqqt_wants_time=false;
+            sprintf(buf, "{\"Stanje\": \"Sistem u pripravnosti: %d minuta\"}", running_time_in_minutes);
+            message.qos = MQTT::QOS0;
+            message.retained = false;
+            message.dup = false;
+            message.payload = (void*)buf;
+            message.payloadlen = strlen(buf);
+            rc = client.publish(PUBRUNNINGTIME, message);
+        }
         
         rc = client.subscribe(SUBPARKING, MQTT::QOS0, park_action);
         rc = client.subscribe(SUBXPARKING, MQTT::QOS0, park_exit);
+        rc = client.subscribe(SUBSETUP, MQTT::QOS0, subsetup_fun);
+        rc = client.subscribe(SUBRUNNINGTIME, MQTT::QOS0, wantTime);
         wait(1);
     }
 
