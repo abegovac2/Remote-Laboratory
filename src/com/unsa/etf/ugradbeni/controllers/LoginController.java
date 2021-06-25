@@ -4,6 +4,7 @@ import com.unsa.etf.ugradbeni.alert.AlertMaker;
 import com.unsa.etf.ugradbeni.models.MqttOnRecive;
 import com.unsa.etf.ugradbeni.models.Room;
 import com.unsa.etf.ugradbeni.models.ThemesMqtt;
+import com.unsa.etf.ugradbeni.models.User;
 import com.unsa.etf.ugradbeni.models.mqtt_components.MessagingClient;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -16,13 +17,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static javafx.scene.control.PopupControl.USE_COMPUTED_SIZE;
@@ -39,9 +42,7 @@ public class LoginController {
 
 
     public LoginController() {
-
     }
-
 
     @FXML
     public void initialize() {
@@ -49,19 +50,16 @@ public class LoginController {
         fldUsername.getStyleClass().add("ok");
         fldUsername.setStyle("-fx-border-color: red");
 
-
         fldUsername.textProperty().addListener((observableValue, oldValue, newValue) -> {
             if (fldUsername.getText().trim().isEmpty()) {
                 fldUsername.setStyle("-fx-border-color: red");
-                fldUsername.getStyleClass().add("ok");
             } else {
                 fldUsername.setStyle("-fx-border-color: lightgreen");
-                fldUsername.getStyleClass().add("ok");
             }
+            fldUsername.getStyleClass().add("ok");
         });
     }
 
-    //ovdje kad uspije login treba se otvorit stranica sa svim grupama izlistanim
     @FXML
     public void signinAction(ActionEvent actionEvent) {
         String username = fldUsername.getText().trim();
@@ -79,18 +77,19 @@ public class LoginController {
                 @Override
                 protected Boolean call() {
                     //check other users
-                    MessagingClient userActions = checkForDuplicateUsernames(username);
+                    MessagingClient userActions = User.checkForDuplicateUsernames(username);
                     if (userActions == null) return false;
-
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/GroupWindow.fxml"));
-                    //prepravitttttt
-                    GroupController groupController = new GroupController(username);
-                    loader.setController(groupController);
+                    User user = new User(username, userActions);
 
-//                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
-//                    //prepravitttttt
-//                    ChatController ctrl = new ChatController(username, userActions, new Room(-1, ""));
-//                    loader.setController(ctrl);
+                    try {
+                        user.setupUserMqtt();
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
+
+                    GroupController groupController = new GroupController(user);
+                    loader.setController(groupController);
                     try {
                         roots[0] = loader.load();
                     } catch (IOException e) {
@@ -133,7 +132,6 @@ public class LoginController {
         }
     }
 
-
     @FXML
     public void closeAction(ActionEvent actionEvent) {
         closeWindow();
@@ -143,73 +141,35 @@ public class LoginController {
         ((Stage) fldUsername.getScene().getWindow()).close();
     }
 
-    private MessagingClient checkForDuplicateUsernames(String username) {
+    /*private MessagingClient checkForDuplicateUsernames(String username) {
         AtomicBoolean isTaken = new AtomicBoolean(false);
         MessagingClient user = null;
-        String s1 = "", s2 = "";
+        String check = "", taken = "";
         try {
             HashMap<String, MqttOnRecive> mapOfFunctions = new HashMap<>();
             mapOfFunctions.put("taken", (String topic, MqttMessage mqttMessage) -> isTaken.set(true));
             user = new MessagingClient(UUID.randomUUID().toString(), mapOfFunctions);
-            s1 = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.CHECK + "/" + username;
-            s2 = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.TAKEN + "/" + username;
-            user.subscribeToTopic(s2, null, 0);
-            user.sendMessage(s1, "{}", 0);
+
+            check = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.CHECK + "/" + username;
+            taken = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.TAKEN + "/" + username;
+
+            user.subscribeToTopic(taken, null, 0);
+            user.sendMessage(check, "{}", 0);
             //waits 2sec to get a response
             Thread.sleep(2000);
-            user.unsubscribeFromTopic(s2, null);
+            user.unsubscribeFromTopic(taken, null);
+
             if (isTaken.get()) {
                 user.disconnect();
                 user = null;
             } else {
                 mapOfFunctions.remove("taken");
-
-                setupUserMqtt(user,username);
             }
+
         } catch (MqttException | InterruptedException e) {
             e.printStackTrace();
         }
         return user;
-    }
-
-    private void setupUserMqtt(MessagingClient user, String username) throws MqttException {
-        HashMap<String, MqttOnRecive> mapOfFunctions = new HashMap<>();
-        user.setOnReciveMap(mapOfFunctions);
-        String taken = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.CHECK + "/" + username;
-        String check = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.CHECK + "/" + username;
-        String connected = "" + ThemesMqtt.BASE + ThemesMqtt.USER_CONNECTED;
-        String disconnected = "" + ThemesMqtt.BASE + ThemesMqtt.USER_DISCONNECTED;
-        String refresh_send = "" + ThemesMqtt.BASE + ThemesMqtt.RECIVE_REFRESH;
-        String refresh_recive = "" + ThemesMqtt.BASE + ThemesMqtt.RECIVE_REFRESH;
-
-        mapOfFunctions.put("check", (String topic, MqttMessage mqttMessage) -> {
-            try {
-                user.sendMessage(taken, "{}", 0);
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
-        });
-        //"{\"UserName\": \"" + username + "\"}"
-        mapOfFunctions.put("connected", (String topic, MqttMessage mqttMessage) -> {
-            //ovdje dodajem usera u listu konektovanih korisnika
-        });
-
-        mapOfFunctions.put("disconnected", (String topic, MqttMessage mqttMessage) -> {
-            //ovdje izbacujem usera u listu konektovanih korisnika
-        });
-
-        mapOfFunctions.put("refresh", (String topic, MqttMessage mqttMessage) -> {
-            //ovdje izbacujem usera u listu konektovanih korisnika
-        });
-
-        user.subscribeToTopic(check, null, 0);
-
-        user.subscribeToTopic(check, null, 0);
-        user.getOnReciveMap().put("recive", (String topic, MqttMessage mqttMessage) -> {
-            String tt = "" + ThemesMqtt.BASE;
-            user.sendMessage("","",0);
-        });
-    }
-
+    }*/
 
 }

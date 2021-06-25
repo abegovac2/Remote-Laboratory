@@ -1,24 +1,33 @@
 package com.unsa.etf.ugradbeni.controllers;
 
-import com.unsa.etf.ugradbeni.bubble.BubbledLabel;
-import com.unsa.etf.ugradbeni.models.MqttOnRecive;
+import com.unsa.etf.ugradbeni.alert.AlertMaker;
+import com.unsa.etf.ugradbeni.models.Message;
 import com.unsa.etf.ugradbeni.models.Room;
+import com.unsa.etf.ugradbeni.models.ThemesMqtt;
+import com.unsa.etf.ugradbeni.models.User;
 import com.unsa.etf.ugradbeni.models.mqtt_components.MessagingClient;
-import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+
+import static javafx.scene.control.PopupControl.USE_COMPUTED_SIZE;
 
 public class GroupController {
     @FXML
@@ -30,28 +39,92 @@ public class GroupController {
     @FXML
     public TextField date;
 
-    private String username;
     private DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
-
+    private com.unsa.etf.ugradbeni.models.User User;
 
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         date.setText(LocalDate.now().format(myFormatObj));
-        user.setText(username);
+        user.setText(User.getUserName());
 
-        //ovako se dodaje u pane
-        for(int i=1;i<=10;i++){
-            Button grupa = new Button("soba "+i);
-            grupa.setMinWidth(200);
-            grupa.setMinHeight(200);
-            pane.getChildren().add(grupa);
+        List<Room> rooms = new ArrayList<>(User.getActiveRooms());
+
+        for (Room room : rooms) {
+            Button group = new Button(room.getRoomName());
+            group.setMinWidth(200);
+            group.setMinHeight(200);
+            group.setOnAction((ActionEvent event) -> {
+                openNewChat(room);
+            });
+            pane.getChildren().add(group);
         }
 
     }
 
-    public GroupController(String username){
-        this.username= username;
+    public GroupController(User user) {
+        this.User = user;
+    }
+
+    public void openNewChat(Room room) {
+        Stage newChatStage = new Stage();
+        newChatStage.setResizable(false);
+
+        final Parent[] roots = {null};
+
+        Task<Boolean> loadingTask = new Task<Boolean>() {
+            @Override
+            protected Boolean call() {
+                //check other users
+                List<Message> lastTenMsg = null;
+                try {
+                    lastTenMsg = User.getMessagesForRoom(room);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
+                ChatController chat = new ChatController(lastTenMsg, User, room);
+                loader.setController(chat);
+
+                try {
+                    roots[0] = loader.load();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        };
+
+        loadingTask.setOnSucceeded(workerStateEvent -> {
+                closeWindow();
+                newChatStage.setScene(new Scene(roots[0], USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
+                newChatStage.show();
+        });
+
+        Parent secRoot = null;
+        try {
+            secRoot = FXMLLoader.load(getClass().getResource("/views/LoadingWindow.fxml"));
+            secRoot.setVisible(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        newChatStage.setScene(new Scene(secRoot, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
+        newChatStage.initModality(Modality.APPLICATION_MODAL);
+        newChatStage.show();
+        Thread thread = new Thread(loadingTask);
+        thread.start();
+
+    }
+
+    public void closeWindow() {
+        ((Stage) user.getScene().getWindow()).close();
     }
 
 

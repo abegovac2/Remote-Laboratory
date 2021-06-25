@@ -2,6 +2,8 @@ package com.unsa.etf.ugradbeni.models;
 
 import org.json.JSONObject;
 
+import java.util.Objects;
+
 public class Room {
     private int id;
     private String roomName;
@@ -25,6 +27,19 @@ public class Room {
 
     public void setRoomName(String roomName) {
         this.roomName = roomName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Room room = (Room) o;
+        return id == room.id && Objects.equals(roomName, room.roomName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, roomName);
     }
 
     @Override
