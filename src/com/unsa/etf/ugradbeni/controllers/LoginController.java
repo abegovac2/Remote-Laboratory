@@ -82,15 +82,15 @@ public class LoginController {
                     MessagingClient userActions = checkForDuplicateUsernames(username);
                     if (userActions == null) return false;
 
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/GroupWindow.fxml"));
-                    //prepravitttttt
-                    GroupController groupController = new GroupController(username);
-                    loader.setController(groupController);
-
-//                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
+//                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/GroupWindow.fxml"));
 //                    //prepravitttttt
-//                    ChatController ctrl = new ChatController(username, userActions, new Room(-1, ""));
-//                    loader.setController(ctrl);
+//                    GroupController groupController = new GroupController(username);
+//                    loader.setController(groupController);
+
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
+                    //prepravitttttt
+                    ChatController ctrl = new ChatController(username, userActions, new Room(-1, ""));
+                    loader.setController(ctrl);
                     try {
                         roots[0] = loader.load();
                     } catch (IOException e) {
