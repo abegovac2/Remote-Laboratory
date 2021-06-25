@@ -1,11 +1,8 @@
 package com.unsa.etf.ugradbeni.controllers;
 
-import com.unsa.etf.ugradbeni.alert.AlertMaker;
 import com.unsa.etf.ugradbeni.models.Message;
 import com.unsa.etf.ugradbeni.models.Room;
-import com.unsa.etf.ugradbeni.models.ThemesMqtt;
 import com.unsa.etf.ugradbeni.models.User;
-import com.unsa.etf.ugradbeni.models.mqtt_components.MessagingClient;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,7 +16,6 @@ import javafx.scene.layout.FlowPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -54,9 +50,7 @@ public class GroupController {
             Button group = new Button(room.getRoomName());
             group.setMinWidth(200);
             group.setMinHeight(200);
-            group.setOnAction((ActionEvent event) -> {
-                openNewChat(room);
-            });
+            group.setOnAction((ActionEvent event) ->openNewChat(room));
             pane.getChildren().add(group);
         }
 

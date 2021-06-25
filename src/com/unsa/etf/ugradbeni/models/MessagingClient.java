@@ -1,4 +1,4 @@
-package com.unsa.etf.ugradbeni.models.mqtt_components;
+package com.unsa.etf.ugradbeni.models;
 
 import com.unsa.etf.ugradbeni.models.MqttOnRecive;
 import org.eclipse.paho.client.mqttv3.*;

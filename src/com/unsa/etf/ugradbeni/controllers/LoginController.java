@@ -1,11 +1,8 @@
 package com.unsa.etf.ugradbeni.controllers;
 
 import com.unsa.etf.ugradbeni.alert.AlertMaker;
-import com.unsa.etf.ugradbeni.models.MqttOnRecive;
-import com.unsa.etf.ugradbeni.models.Room;
-import com.unsa.etf.ugradbeni.models.ThemesMqtt;
 import com.unsa.etf.ugradbeni.models.User;
-import com.unsa.etf.ugradbeni.models.mqtt_components.MessagingClient;
+import com.unsa.etf.ugradbeni.models.MessagingClient;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,16 +14,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static javafx.scene.control.PopupControl.USE_COMPUTED_SIZE;
 

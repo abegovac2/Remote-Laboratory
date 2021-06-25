@@ -1,6 +1,5 @@
 package com.unsa.etf.ugradbeni.models;
 
-import com.unsa.etf.ugradbeni.models.mqtt_components.MessagingClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
@@ -112,7 +111,6 @@ public class User {
         setupUserNameCheck();
         setupConnectDisconnect();
         setupRefreshUsers();
-//        setupRefreshRooms();
 
         refreshConnectedUsers();
         refreshActiveRooms();
@@ -183,7 +181,7 @@ public class User {
             userClient.sendMessage(send, "{}", 0);
 
             //stops the tread so it can recive all refresh actions
-            Thread.sleep(2000);
+            Thread.sleep(4000);
 
             userClient.getOnReciveMap().remove("refresh");
             userClient.getOnReciveMap().put("refresh", function);
@@ -245,22 +243,20 @@ public class User {
         String send = "" + ThemesMqtt.BASE + ThemesMqtt.MESSAGE + "/" + room.getRoomName() + ThemesMqtt.SEND_REFRESH;
         String recive = "" + ThemesMqtt.BASE + ThemesMqtt.MESSAGE + "/" + room.getRoomName() + ThemesMqtt.RECIVE_REFRESH;
 
-        userClient.getOnReciveMap().put("refresh", (String topic, MqttMessage mqttMessage) ->{
-            new Thread(() -> {
-                JSONObject obj = new JSONObject(new String(mqttMessage.getPayload()));
-                JSONArray array = obj.getJSONArray("ListOfMessages");
+        userClient.getOnReciveMap().put("refresh", (String topic, MqttMessage mqttMessage) ->
+                new Thread(() -> {
+                    JSONObject obj = new JSONObject(new String(mqttMessage.getPayload()));
+                    JSONArray array = obj.getJSONArray("ListOfMessages");
 
-                for (int i = 0; i < array.length(); ++i) {
-                    obj = array.getJSONObject(i);
-                    int id = obj.getInt("Id");
-                    String message = obj.getString("Message");
-                    int roomId = obj.getInt("RoomId");
-                    Message messageObj = new Message(id, message, roomId);
-                    last10.add(messageObj);
-                }
-            }).start();
-
-        }
+                    for (int i = 0; i < array.length(); ++i) {
+                        obj = array.getJSONObject(i);
+                        int id = obj.getInt("Id");
+                        String message = obj.getString("Message");
+                        int roomId = obj.getInt("RoomId");
+                        Message messageObj = new Message(id, message, roomId);
+                        last10.add(messageObj);
+                    }
+                }).start()
         );
 
         userClient.subscribeToTopic(recive, null, 0);
@@ -278,7 +274,7 @@ public class User {
     public static MessagingClient checkForDuplicateUsernames(String username) {
         AtomicBoolean isTaken = new AtomicBoolean(false);
         MessagingClient user = null;
-        String check = "", taken = "";
+        String check, taken;
         try {
             HashMap<String, MqttOnRecive> mapOfFunctions = new HashMap<>();
             mapOfFunctions.put("taken", (String topic, MqttMessage mqttMessage) -> isTaken.set(true));

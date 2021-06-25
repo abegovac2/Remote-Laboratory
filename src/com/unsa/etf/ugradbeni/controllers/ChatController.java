@@ -3,7 +3,7 @@ package com.unsa.etf.ugradbeni.controllers;
 import com.unsa.etf.ugradbeni.alert.AlertMaker;
 import com.unsa.etf.ugradbeni.bubble.BubbledLabel;
 import com.unsa.etf.ugradbeni.models.*;
-import com.unsa.etf.ugradbeni.models.mqtt_components.MessagingClient;
+import com.unsa.etf.ugradbeni.models.MessagingClient;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Task;
@@ -50,7 +50,7 @@ public class ChatController {
 
     private MessagingClient chatUser;
     private SimpleStringProperty messageContent = new SimpleStringProperty("");
-    private String currentChatTopic = "";
+    private String currentChatTopic;
 
     private User user;
     private List<Message> last10;
@@ -125,17 +125,10 @@ public class ChatController {
         functions.put("message", (String theme, MqttMessage mqttMessage) ->
                 new Thread(() -> {
                     try {
-                        // Button newMessage = new Button();
-                        BubbledLabel bl = new BubbledLabel();
-
-                        //
-                        //ovdje treba umjesto button-a stavit nesto drugo, tj.ljepse
-                        //
-
+                        Button bl = new Button();
 
                         JSONObject msg = new JSONObject(new String(mqttMessage.getPayload()));
                         String text = msg.getString("Message");
-                        //newMessage.setText(text);
                         bl.setText(text);
                         Platform.runLater(() -> ChatList.getChildren().add(bl));
                     } catch (JSONException e) {
@@ -208,9 +201,11 @@ public class ChatController {
     @FXML
     public void roomRefresh(ActionEvent event) {
         user.refreshActiveRooms();
-        RoomList.getChildren().clear();
         new Thread(() -> {
-            Platform.runLater(() -> RoomList.getChildren().add(btnRoomRefresh));
+            Platform.runLater(() -> {
+                RoomList.getChildren().clear();
+                RoomList.getChildren().add(btnRoomRefresh);
+            });
             for (Room room : user.getActiveRooms()) {
                 if (room.equals(currentRoom)) continue;
                 Button bl = new Button();
@@ -225,9 +220,11 @@ public class ChatController {
     @FXML
     public void userRefresh(ActionEvent event) {
         user.refreshConnectedUsers();
-        UserList.getChildren().clear();
         new Thread(() -> {
-            Platform.runLater(() -> UserList.getChildren().add(btnUsersRefresh));
+            Platform.runLater(() -> {
+                UserList.getChildren().clear();
+                UserList.getChildren().add(btnUsersRefresh);
+            });
             for (String user1 : user.getConnectedUsers()) {
                 Button bl = new Button();
                 bl.setText(user1);
