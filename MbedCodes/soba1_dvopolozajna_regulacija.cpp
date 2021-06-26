@@ -3,11 +3,12 @@
 // SOBA1: Dvopoložajna regulacija temperature
 //
 
-#define SUBSETUP "project225883/us/etf/message/soba1/setup/mbed"
 #define SUBNTCVOLTAGE "theme/ntcvoltage" //needed for simulating physical input of ntc voltage
-#define SUBRUNNINGTIME "project225883/us/etf/message/soba1/mbed/timewant"
+#define SUBRUNNINGTIME "project225883/us/etf/message/soba1/mbed/porttimewant"
+#define SUBSETUP "project225883/us/etf/message/soba1/mbed/info"
 
-#define PUBSETUP "project225883/us/etf/message/soba1/setup/mbed"
+
+#define PUBSETUP "project225883/us/etf/message/soba1/mbed"
 #define PUBHEATERSTATE "project225883/us/etf/message/soba1/mbed/heater"
 #define PUBRUNNINGTIME "project225883/us/etf/message/soba1/mbed/time"
 
@@ -34,6 +35,7 @@ bool data_to_send=false;
 void subsetup_fun(MQTT::MessageData& md){
     data_to_send=true;
 }
+
 
 void heater_regulation(MQTT::MessageData& md)
 {
@@ -132,7 +134,7 @@ int main(int argc, char* argv[])
         
         if (old_heater!=heater) {
             old_heater=heater;
-            sprintf(buf, "{\"Stanje\": \"Stanje grijaca: %d\"}", heater);
+            sprintf(buf, "{\"Message\": \"[mbed]: Stanje grijaca: %d\"}", heater);
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -142,7 +144,7 @@ int main(int argc, char* argv[])
         }
         if(mqqt_wants_time){
             mqqt_wants_time=false;
-            sprintf(buf, "{\"Stanje\": \"Sistem u pripravnosti: %d minuta\"}", running_time_in_minutes);
+            sprintf(buf, "{\"Message\": \"[mbed]: Sistem u pripravnosti: %d minuta\"}", running_time_in_minutes);
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -152,7 +154,7 @@ int main(int argc, char* argv[])
         }
         if(data_to_send){
             data_to_send=false;
-            sprintf(buf, "{\"Topics\": [\"heater\",\"time\"]}");
+            sprintf(buf, "{\"Message\": \"[mbed]: Teme: heater, time | 'Dvopoložajna regulacija'\"}");
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
