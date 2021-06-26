@@ -32,8 +32,6 @@ public class MessagingClient implements MqttCallback {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
 
-//        MqttClientPersistence persistence = new MqttDefaultFilePersistence("persistence");
-
         mqttClient = new MqttClient(
                 brokerURL,
                 clientId,
@@ -76,11 +74,11 @@ public class MessagingClient implements MqttCallback {
         synchronized (this.getClass()) {
 
             String[] splitTopic = topic.split("/");
-            String key = splitTopic[splitTopic.length-2];
+            String key = splitTopic[splitTopic.length - 2];
 
             MqttOnRecive function = onReciveMap.get(key);
 
-            if(function != null) {
+            if (function != null) {
                 try {
                     function.execute(topic, mqttMessage);
                 } catch (MqttException e) {

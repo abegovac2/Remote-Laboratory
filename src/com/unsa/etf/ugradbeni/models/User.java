@@ -255,16 +255,21 @@ public class User {
 
         userClient.getOnReciveMap().put("refresh", (String topic, MqttMessage mqttMessage) ->
                 new Thread(() -> {
-                    JSONObject obj = new JSONObject(new String(mqttMessage.getPayload()));
-                    JSONArray array = obj.getJSONArray("ListOfMessages");
+                    try {
+                        JSONObject obj = new JSONObject(new String(mqttMessage.getPayload()));
+                        JSONArray array = obj.getJSONArray("ListOfMessages");
 
-                    for (int i = 0; i < array.length(); ++i) {
-                        obj = array.getJSONObject(i);
-                        int id = obj.getInt("Id");
-                        String message = obj.getString("Message");
-                        int roomId = obj.getInt("RoomId");
-                        Message messageObj = new Message(id, message, roomId);
-                        last10.add(messageObj);
+                        for (int i = 0; i < array.length(); ++i) {
+                            obj = array.getJSONObject(i);
+                            int id = obj.getInt("Id");
+                            String message = obj.getString("Message");
+                            int roomId = obj.getInt("RoomId");
+                            Message messageObj = new Message(id, message, roomId);
+                            last10.add(messageObj);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        last10.add(new Message(-404, "noRoom", -404));
                     }
                 }).start()
         );
@@ -303,7 +308,7 @@ public class User {
             userClient.unsubscribeFromTopic(taken, null);
 
             mapOfFunctions.remove("taken");
-            if(!isTaken.get()) userName = username;
+            if (!isTaken.get()) userName = username;
         } catch (MqttException | InterruptedException e) {
             e.printStackTrace();
         }

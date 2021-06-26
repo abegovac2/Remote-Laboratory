@@ -1,5 +1,6 @@
 package com.unsa.etf.ugradbeni.controllers;
 
+import com.unsa.etf.ugradbeni.alert.AlertMaker;
 import com.unsa.etf.ugradbeni.models.Room;
 import com.unsa.etf.ugradbeni.models.User;
 import javafx.application.Platform;
@@ -74,7 +75,7 @@ public class GroupController {
                 } catch (MqttException e) {
                     e.printStackTrace();
                 }
-
+                if (User.getLast10().get(User.getLast10().size() - 1).getId() == -404) return false;
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
                 ChatController chat = new ChatController(User, room);
                 loader.setController(chat);
@@ -101,9 +102,14 @@ public class GroupController {
         };
 
         loadingTask.setOnSucceeded(workerStateEvent -> {
-            closeWindow();
-            newChatStage.setScene(new Scene(roots[0], USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
-            newChatStage.show();
+            if (roots[0] == null) {
+                newChatStage.close();
+                AlertMaker.alertERROR("An error has occured", "Room \"" + room.getRoomName() + "\" no longer exists!");
+            } else {
+                closeWindow();
+                newChatStage.setScene(new Scene(roots[0], USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
+                newChatStage.show();
+            }
         });
 
         Parent secRoot = null;

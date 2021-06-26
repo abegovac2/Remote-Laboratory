@@ -189,22 +189,6 @@ public class ChatController {
 
         functions.put("message", recive);
         functions.put(currentRoom.getRoomName(), recive);
-
-        /*functions.put("info", (String theme, MqttMessage mqttMessage) ->
-                new Thread(() -> {
-                    try {
-                        if(theme.endsWith("send")) return;
-                        Button bl = new Button();
-
-                        JSONObject msg = new JSONObject(new String(mqttMessage.getPayload()));
-                        String text = msg.getString("Message");
-                        bl.setText(text);
-                        Platform.runLater(() -> ChatList.getChildren().add(bl));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }).start());*/
-
     }
 
     public void openNewChat(Room room) {
@@ -221,7 +205,7 @@ public class ChatController {
                 } catch (MqttException e) {
                     e.printStackTrace();
                 }
-
+                if (user.getLast10().get(user.getLast10().size() - 1).getId() == -404) return false;
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
                 ChatController chat = new ChatController(user, room);
                 loader.setController(chat);
@@ -247,9 +231,14 @@ public class ChatController {
         };
 
         loadingTask.setOnSucceeded(workerStateEvent -> {
-            closeWindow();
-            newChatStage.setScene(new Scene(roots[0], USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
-            newChatStage.show();
+            if (roots[0] == null) {
+                newChatStage.close();
+                AlertMaker.alertERROR("An error has occured", "Room \"" + room.getRoomName() + "\" no longer exists!");
+            } else {
+                closeWindow();
+                newChatStage.setScene(new Scene(roots[0], USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
+                newChatStage.show();
+            }
         });
 
         Parent secRoot = null;
