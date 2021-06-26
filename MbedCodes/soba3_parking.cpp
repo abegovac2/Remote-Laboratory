@@ -3,13 +3,13 @@
 // SOBA3: Parking
 //
 
-#define SUBSETUP "project225883/us/etf/message/soba3/setup/mbed"
-#define SUBPARKING "project225883/us/etf/message/soba3/mbed/parking"
-#define SUBXPARKING "project225883/us/etf/message/soba3/mbed/exit"
-#define SUBRUNNINGTIME "project225883/us/etf/message/soba3/mbed/timewant"
+#define SUBSETUP "project225883/us/etf/message/soba3/mbed/info"
+#define SUBPARKING "project225883/us/etf/message/soba3/mbed/portparking"
+#define SUBXPARKING "project225883/us/etf/message/soba3/mbed/portexit"
+#define SUBRUNNINGTIME "project225883/us/etf/message/soba3/mbed/porttimewant"
 
-#define PUBSETUP "project225883/us/etf/message/soba3/setup/mbed"
-#define PUBPARKING "project225883/us/etf/message/soba3/mbed/info"
+#define PUBSETUP "project225883/us/etf/message/soba3/mbed"
+#define PUBPARKING "project225883/us/etf/message/soba3/mbed/parking"
 #define PUBRUNNINGTIME "project225883/us/etf/message/soba3/mbed/time"
 
 #include "mbed.h"
@@ -48,7 +48,7 @@ void reset_system(){
     info2=-1;
     tmp_car=-1;
     ticket=0;
-    for(int i=0;i<20;i++) park_place_taken[i]=1;
+    for(int i=0;i<20;i++) park_place_taken[i]=0;
     for(int i=0;i<20;i++) block_30_min[i]=0;
     for(int i=0;i<20;i++) park_place[i].stop();
 }
@@ -164,8 +164,8 @@ int main(int argc, char* argv[])
     char buf[100];
     while(1) {
         if(info!=-1){
-            if(info==1) sprintf(buf, "{\"Zauzeli ste mjesto\": %d}", tmp_car);
-            else if(info==2) sprintf(buf, "{\"Nema slobodnog mjesta!\"}");
+            if(info==1) sprintf(buf, "{\"Message\": \"Zauzeli ste mjesto: %d\"}", tmp_car);
+            else if(info==2) sprintf(buf, "{\"Message\": \"Nema slobodnog mjesta!\"}");
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -173,9 +173,10 @@ int main(int argc, char* argv[])
             message.payloadlen = strlen(buf);
             rc = client.publish(PUBPARKING, message);
             info=-1, tmp_car=-1;
+            printf("Auto zabiljezeno\n");
         }
         if(info2!=-1){
-            sprintf(buf, "{\"Cijena parkinga\": %.2f | Provedeno minuta: %d}", ticket, time_in_min);
+            sprintf(buf, "{\"Message\": \"Cijena parkinga: %.2f KM\"}",ticket); // Provedeno minuta: , ticket, time_in_min);
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -186,7 +187,7 @@ int main(int argc, char* argv[])
         }
         if(data_to_send){
             data_to_send=false;
-            sprintf(buf, "{\"Topics\": [\"info\"]}");
+            sprintf(buf, "{\"Message\": \"[mbed]: portexit, portparking, info\"}");
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -196,13 +197,14 @@ int main(int argc, char* argv[])
         } 
         if(mqqt_wants_time){
             mqqt_wants_time=false;
-            sprintf(buf, "{\"Stanje\": \"Sistem u pripravnosti: %d minuta\"}", running_time_in_minutes);
+            sprintf(buf, "{\"Message\": \"[mbed]: %d minuta od zadnjeg restarta\"}", running_time_in_minutes());
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
             message.payload = (void*)buf;
             message.payloadlen = strlen(buf);
             rc = client.publish(PUBRUNNINGTIME, message);
+            printf("Poslan info o vremenu (%d)\n", running_time_in_minutes());
         }
         
         rc = client.subscribe(SUBPARKING, MQTT::QOS0, park_action);
