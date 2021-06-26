@@ -1,6 +1,7 @@
 package com.unsa.etf.ugradbeni.models;
 
 import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 import java.util.Map;
@@ -31,12 +32,12 @@ public class MessagingClient implements MqttCallback {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
 
-        MqttClientPersistence persistence = new MqttDefaultFilePersistence("persistence");
+//        MqttClientPersistence persistence = new MqttDefaultFilePersistence("persistence");
 
         mqttClient = new MqttClient(
                 brokerURL,
                 clientId,
-                persistence
+                new MemoryPersistence()
         );
 
         mqttClient.setCallback(this);

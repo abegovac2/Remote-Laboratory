@@ -6,91 +6,114 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="582.0" prefWidth="697.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css" vgap="5.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+          prefHeight="582.0" prefWidth="697.0" style="-fx-background-color: #2A2E37;"
+          stylesheets="@../css/dark-theme.css" vgap="5.0" xmlns="http://javafx.com/javafx/11.0.1"
+          xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="352.0" minWidth="10.0" prefWidth="352.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="352.0" minWidth="10.0" prefWidth="352.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="446.0" minHeight="10.0" prefHeight="443.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="206.0" minHeight="10.0" prefHeight="48.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="446.0" minHeight="10.0" prefHeight="443.0" vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="206.0" minHeight="10.0" prefHeight="48.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
-        <TextField fx:id="MessageField" promptText="type text" styleClass="text-field-email" GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <TextField fx:id="MessageField" promptText="type text" styleClass="text-field-email" GridPane.columnIndex="1"
+                   GridPane.rowIndex="3">
             <GridPane.margin>
-                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
             </GridPane.margin>
             <padding>
-                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
             </padding>
         </TextField>
-        <Button fx:id="SendMessage" defaultButton="true" mnemonicParsing="false" onAction="#sendAction" prefHeight="29.0" prefWidth="134.0" text="Send" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+        <Button fx:id="SendMessage" defaultButton="true" mnemonicParsing="false" onAction="#sendAction"
+                prefHeight="29.0" prefWidth="134.0" text="Send" GridPane.columnIndex="2" GridPane.halignment="CENTER"
+                GridPane.rowIndex="3">
             <GridPane.margin>
-                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
             </GridPane.margin>
             <padding>
-                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
             </padding>
         </Button>
-        <ScrollPane hbarPolicy="NEVER" prefHeight="412.0" prefWidth="203.0" style="-fx-background-color: #FFFF8D;" vbarPolicy="NEVER" GridPane.rowIndex="2">
+        <ScrollPane hbarPolicy="NEVER" prefHeight="412.0" prefWidth="203.0" style="-fx-background-color: #FFFF8D;"
+                    vbarPolicy="NEVER" GridPane.rowIndex="2">
             <content>
-                <VBox fx:id="RoomList" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="451.0" prefWidth="169.0" spacing="5.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css">
-               <children>
-                  <Button fx:id="btnRoomRefresh" mnemonicParsing="false" onAction="#roomRefresh" text="Refresh" />
-               </children></VBox>
+                <VBox fx:id="RoomList" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308"
+                      maxWidth="1.7976931348623157E308" prefHeight="451.0" prefWidth="169.0" spacing="5.0"
+                      style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css">
+                    <children>
+                        <Button fx:id="btnRoomRefresh" mnemonicParsing="false" onAction="#roomRefresh" text="Refresh"/>
+                    </children>
+                </VBox>
             </content>
         </ScrollPane>
-        <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FFFF8D;" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FFFF8D;"
+                    GridPane.columnIndex="1" GridPane.rowIndex="2">
             <content>
-                <VBox fx:id="ChatList" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="440.0" prefWidth="350.0" spacing="5.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css" />
+                <VBox fx:id="ChatList" alignment="CENTER" maxHeight="1.7976931348623157E308"
+                      maxWidth="1.7976931348623157E308" prefHeight="440.0" prefWidth="350.0" spacing="5.0"
+                      style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css"/>
             </content>
         </ScrollPane>
-        <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FFFF8D;" vbarPolicy="NEVER" GridPane.columnIndex="2" GridPane.rowIndex="2">
+        <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FFFF8D;"
+                    vbarPolicy="NEVER" GridPane.columnIndex="2" GridPane.rowIndex="2">
             <content>
-                <VBox fx:id="UserList" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="449.0" prefWidth="165.0" spacing="5.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css">
-               <children>
-                  <Button fx:id="btnUsersRefresh" mnemonicParsing="false" onAction="#userRefresh" text="Refresh" />
-               </children></VBox>
+                <VBox fx:id="UserList" alignment="CENTER" maxHeight="1.7976931348623157E308"
+                      maxWidth="1.7976931348623157E308" prefHeight="449.0" prefWidth="165.0" spacing="5.0"
+                      style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css">
+                    <children>
+                        <Button fx:id="btnUsersRefresh" mnemonicParsing="false" onAction="#userRefresh" text="Refresh"/>
+                    </children>
+                </VBox>
             </content>
         </ScrollPane>
-        <VBox fx:id="RoomList2" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="412.0" prefWidth="160.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css" GridPane.rowIndex="1">
+        <VBox fx:id="RoomList2" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+              prefHeight="412.0" prefWidth="160.0" style="-fx-background-color: #2A2E37;"
+              stylesheets="@../css/dark-theme.css" GridPane.rowIndex="1">
             <children>
-                <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="ROOMS" textFill="WHITE">
+                <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                       text="ROOMS" textFill="WHITE">
                     <font>
-                        <Font size="17.0" />
+                        <Font size="17.0"/>
                     </font>
                 </Label>
             </children>
         </VBox>
-        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Trenutna soba" textFill="WHITE" GridPane.rowIndex="3" />
-        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="CHAT" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="Trenutna soba" textFill="WHITE" GridPane.rowIndex="3"/>
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="CHAT"
+               textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <font>
-                <Font size="17.0" />
+                <Font size="17.0"/>
             </font>
         </Label>
-        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="ONLINE USERS" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="1">
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="ONLINE USERS" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="1">
             <font>
-                <Font size="17.0" />
+                <Font size="17.0"/>
             </font>
         </Label>
         <MenuBar GridPane.columnSpan="2">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close" />
+                        <MenuItem mnemonicParsing="false" text="Close"/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
+                        <MenuItem mnemonicParsing="false" text="Delete"/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
+                        <MenuItem mnemonicParsing="false" text="About"/>
                     </items>
                 </Menu>
             </menus>
@@ -99,24 +122,25 @@
             <children>
                 <ImageView fitHeight="33.0" fitWidth="40.0" opacity="0.23" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../pictures/user.jpg" />
+                        <Image url="@../pictures/user.jpg"/>
                     </image>
                 </ImageView>
-                <Label fx:id="usernameLbl" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="33.0" prefWidth="129.0" textFill="WHITE">
+                <Label fx:id="usernameLbl" alignment="CENTER" maxHeight="1.7976931348623157E308"
+                       maxWidth="1.7976931348623157E308" prefHeight="33.0" prefWidth="129.0" textFill="WHITE">
                     <font>
-                        <Font size="18.0" />
+                        <Font size="18.0"/>
                     </font>
                 </Label>
             </children>
             <padding>
-                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
             </padding>
             <GridPane.margin>
-                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
             </GridPane.margin>
         </HBox>
     </children>
     <padding>
-        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
     </padding>
 </GridPane>

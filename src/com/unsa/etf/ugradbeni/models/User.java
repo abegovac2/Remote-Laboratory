@@ -22,9 +22,8 @@ public class User {
     private Set<Room> activeRooms;
     private List<Message> last10;
 
-    public User(String userName, MessagingClient userClient) {
-        this.userName = userName;
-        this.userClient = userClient;
+    public User() throws MqttException {
+        this.userClient = new MessagingClient(UUID.randomUUID().toString(), new HashMap<>());
         connectedUsers = new HashSet<>();
         activeRooms = new HashSet<>();
     }
@@ -282,34 +281,32 @@ public class User {
         return last10;
     }
 
-    public static MessagingClient checkForDuplicateUsernames(String username) {
+    public boolean checkForDuplicateUsernames(String username) {
         AtomicBoolean isTaken = new AtomicBoolean(false);
-        MessagingClient user = null;
+//        MessagingClient user = null;
         String check, taken;
         try {
-            HashMap<String, MqttOnRecive> mapOfFunctions = new HashMap<>();
+            Map<String, MqttOnRecive> mapOfFunctions = userClient.getOnReciveMap();
             mapOfFunctions.put("taken", (String topic, MqttMessage mqttMessage) -> isTaken.set(true));
-            user = new MessagingClient(UUID.randomUUID().toString(), mapOfFunctions);
+//            user = new MessagingClient(UUID.randomUUID().toString(), mapOfFunctions);
 
             check = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.CHECK + "/" + username;
             taken = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.TAKEN + "/" + username;
 
-            user.subscribeToTopic(taken, null, 0);
-            user.sendMessage(check, "{}", 0);
+//            user.subscribeToTopic(taken, null, 0);
+            userClient.subscribeToTopic(taken, null, 0);
+//            user.sendMessage(check, "{}", 0);
+            userClient.sendMessage(check, "{}", 0);
             //waits 2sec to get a response
             Thread.sleep(2000);
-            user.unsubscribeFromTopic(taken, null);
+//            user.unsubscribeFromTopic(taken, null);
+            userClient.unsubscribeFromTopic(taken, null);
 
-            if (isTaken.get()) {
-                user.disconnect();
-                user = null;
-            } else {
-                mapOfFunctions.remove("taken");
-            }
-
+            mapOfFunctions.remove("taken");
+            if(!isTaken.get()) userName = username;
         } catch (MqttException | InterruptedException e) {
             e.printStackTrace();
         }
-        return user;
+        return isTaken.get();
     }
 }

@@ -14,8 +14,8 @@ public enum ThemesMqtt {
     USER("/user"),
     CHECK("/check"),
     TAKEN("/taken"),
-    USER_CONNECTED("/user/newUser/connected"),
-    USER_DISCONNECTED("/user/newUser/disconnected"),
+    USER_CONNECTED("/user/connected"),
+    USER_DISCONNECTED("/user/disconnected"),
     USER_REFRESH_SEND("/user/refresh/send"),
     USER_REFRESH_RECIVE("/user/refresh/recive"),
 

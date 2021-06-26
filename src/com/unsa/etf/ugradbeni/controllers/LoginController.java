@@ -33,8 +33,16 @@ public class LoginController {
     @FXML
     public AnchorPane anchorPane;
 
+    private User user;
+
 
     public LoginController() {
+        try {
+            user = new User();
+        } catch (MqttException e) {
+            e.printStackTrace();
+            Platform.exit();
+        }
     }
 
     @FXML
@@ -73,10 +81,9 @@ public class LoginController {
                 @Override
                 protected Boolean call() {
                     //check other users
-                    MessagingClient userActions = User.checkForDuplicateUsernames(username);
-                    if (userActions == null) return false;
+                    boolean isTaken = user.checkForDuplicateUsernames(username);
+                    if (isTaken) return false;
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/GroupWindow.fxml"));
-                    User user = new User(username, userActions);
 
                     try {
                         user.setupUserMqtt();
