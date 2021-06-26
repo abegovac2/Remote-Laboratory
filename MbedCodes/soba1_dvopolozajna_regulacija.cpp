@@ -14,7 +14,7 @@
 
 #include "mbed.h"
 
-#define MQTTCLIENT_QOS2 0
+#define MQTTCLIENT_QOS2 2
 
 #include "easy-connect.h"
 #include "MQTTNetwork.h"
@@ -25,6 +25,7 @@
 Ticker check30min;
 Timer time_running;
 DigitalOut led1(p7);
+int stanje=23;
 AnalogOut dc_dimmer(p18);
 float v_ntc;
 bool heater=false;
@@ -34,6 +35,7 @@ bool data_to_send=false;
 
 void subsetup_fun(MQTT::MessageData& md){
     data_to_send=true;
+    printf("Zabiljezena poruka\n");
 }
 
 
@@ -53,14 +55,17 @@ void heater_regulation(MQTT::MessageData& md)
 
     if(v_ntc < 2.98689){ // > 25 C
         heater=false;
+        stanje+=2;
         printf("25 C+ | Grijac: OFF\n");
     }
     else if(v_ntc < 3.03722){ // [21 C, 25 C]
         heater=false;
+        stanje=0;
         printf("23+-2 C | Grijac: OFF\n");
     }
     else{ // < 21 C
         heater=true;
+        stanje-=2;
         printf("21 C- | Grijac: ON\n");
     }
 }
@@ -68,6 +73,7 @@ void heater_regulation(MQTT::MessageData& md)
 void wantTime(MQTT::MessageData& md){
     // kod
     mqqt_wants_time=true;
+    printf("Korisnicki upit za vrijeme primljen\n");
 }
 
 int running_time_in_minutes(){
@@ -125,7 +131,7 @@ int main(int argc, char* argv[])
     MQTT::Message message;
 
     // QoS 0
-    char buf[100];
+    char buf[70];
     bool old_heater=false;
     while(1) {
         led1 = heater; 
@@ -134,13 +140,16 @@ int main(int argc, char* argv[])
         
         if (old_heater!=heater) {
             old_heater=heater;
-            sprintf(buf, "{\"Message\": \"[mbed]: Stanje grijaca: %d\"}", heater);
+            if(heater) sprintf(buf, "{\"Message\": \"[mbed]: Stanje grijaca: upaljen\"}");
+            else sprintf(buf, "{\"Message\": \"[mbed]: Stanje grijaca: ugasen\"}");
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
             message.payload = (void*)buf;
             message.payloadlen = strlen(buf);
             rc = client.publish(PUBHEATERSTATE, message);
+            printf("Poslana info poruka o grijacu\n");
+            stanje=23;
         }
         if(mqqt_wants_time){
             mqqt_wants_time=false;
@@ -151,22 +160,25 @@ int main(int argc, char* argv[])
             message.payload = (void*)buf;
             message.payloadlen = strlen(buf);
             rc = client.publish(PUBRUNNINGTIME, message);
+            printf("Poslana info poruka o vremenu (%d)\n",running_time_in_minutes);
         }
         if(data_to_send){
             data_to_send=false;
-            sprintf(buf, "{\"Message\": \"[mbed]: Teme: heater, time | 'Dvopoložajna regulacija'\"}");
+            sprintf(buf, "{\"Message\": \"[mbed]: Teme: heater, time\"}");
+            
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
             message.payload = (void*)buf;
             message.payloadlen = strlen(buf);
             rc = client.publish(PUBSETUP, message);
+            printf("Poslana info poruka\n");
         }        
         
         rc = client.subscribe(SUBNTCVOLTAGE, MQTT::QOS0, heater_regulation);
         rc = client.subscribe(SUBRUNNINGTIME, MQTT::QOS0, wantTime);
         rc = client.subscribe(SUBSETUP, MQTT::QOS0, subsetup_fun);
-        wait(1);
+        wait(0.1);
     }
 
 }
