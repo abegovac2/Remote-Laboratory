@@ -56,7 +56,7 @@ public class User {
                     String userName = topicParts[topicParts.length - 1];
                     if (userList != null) {
                         Button newUser = new Button(userName);
-                        Platform.runLater(()->userList.getChildren().add(newUser));
+                        Platform.runLater(() -> userList.getChildren().add(newUser));
                     }
                     connectedUsers.add(userName);
                 }).start()
@@ -68,24 +68,22 @@ public class User {
                     String[] topicParts = topic.split("/");
                     String userName = topicParts[topicParts.length - 1];
                     if (userList != null) {
-//                        Button aUser = new Button(userName);
-                        Platform.runLater(()->
-                                userList.getChildren().removeIf((Node node)->
+                        Platform.runLater(() ->
+                                userList.getChildren().removeIf((Node node) ->
                                         node instanceof Button && ((Button) node).getText().equals(userName)));
-//                        Platform.runLater(()->userList.getChildren().remove(aUser));
                     }
                     connectedUsers.remove(topicParts[topicParts.length - 1]);
                 }).start()
         );
 
-        if(userList == null) {
+        if (userList == null) {
             userClient.sendMessage(connected + "/" + userName, "{}", 0);
             userClient.subscribeToTopic(connected + "/+", null, 0);
             userClient.subscribeToTopic(disconnected + "/+", null, 0);
         }
     }
 
-    public void disconnectUser(){
+    public void disconnectUser() {
         String disconnected = "" + ThemesMqtt.BASE + ThemesMqtt.USER_DISCONNECTED + "/" + userName;
         try {
             userClient.sendMessage(disconnected, "{}", 0);

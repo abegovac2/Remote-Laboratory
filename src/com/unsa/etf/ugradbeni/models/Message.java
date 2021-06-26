@@ -1,7 +1,5 @@
 package com.unsa.etf.ugradbeni.models;
 
-import org.json.JSONObject;
-
 public class Message {
     private int id;
     private String message;

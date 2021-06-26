@@ -118,9 +118,9 @@ public class ChatController {
         }
         messageContent.set("");
 
-        if(message.startsWith("!port")) sendToMbed(message);
-        else if(message.startsWith("!info")) sendForInfo();
-        else sendRegular(message,null);
+        if (message.startsWith("!port")) sendToMbed(message);
+        else if (message.startsWith("!info")) sendForInfo();
+        else sendRegular(message, null);
 
     }
 
@@ -128,18 +128,18 @@ public class ChatController {
         StringBuilder port = new StringBuilder();
         char[] string = message.toCharArray();
         int i = 1;
-        while(string[i] != ':'){
+        while (string[i] != ':') {
             port.append(string[i]);
             ++i;
         }
         String sendToTopic = "" + ThemesMqtt.BASE + ThemesMqtt.MESSAGE + "/" + this.currentRoom.getRoomName() + "/mbed/" + port.toString();
         StringBuilder value = new StringBuilder();
         ++i;
-        while(i < message.length()){
-            if(string[i] != ' ') value.append(string[i]);
+        while (i < message.length()) {
+            if (string[i] != ' ') value.append(string[i]);
             ++i;
         }
-        if(value.toString().isEmpty()) return;
+        if (value.toString().isEmpty()) return;
         try {
             chatUser.sendMessage(sendToTopic, value.toString(), 0);
             sendRegular(message, "mbed");
@@ -148,8 +148,8 @@ public class ChatController {
         }
     }
 
-    private void sendForInfo(){
-        String info = currentChatTopic + ThemesMqtt.USER_SEND;
+    private void sendForInfo() {
+        String info = currentChatTopic + ThemesMqtt.SEND_INFO;
         try {
             chatUser.sendMessage(info, "{}", 0);
             sendRegular("!info", "mbed");
@@ -190,7 +190,7 @@ public class ChatController {
         functions.put("message", recive);
         functions.put(currentRoom.getRoomName(), recive);
 
-        functions.put("info", (String theme, MqttMessage mqttMessage) ->
+        /*functions.put("info", (String theme, MqttMessage mqttMessage) ->
                 new Thread(() -> {
                     try {
                         if(theme.endsWith("send")) return;
@@ -203,7 +203,7 @@ public class ChatController {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }).start());
+                }).start());*/
 
     }
 
@@ -237,7 +237,7 @@ public class ChatController {
                     e.printStackTrace();
                 }
 
-                newChatStage.setOnCloseRequest((event)->{
+                newChatStage.setOnCloseRequest((event) -> {
                     user.disconnectUser();
                     Platform.exit();
                 });

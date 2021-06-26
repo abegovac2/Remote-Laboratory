@@ -19,6 +19,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import static javafx.scene.control.PopupControl.USE_COMPUTED_SIZE;
 
@@ -58,7 +59,10 @@ public class LoginController {
         if (username.isEmpty()) AlertMaker.alertERROR("An error has occured", "You must enter a username!");
         else if (username.length() > 10) {
             fldUsername.setText("");
-            AlertMaker.alertERROR("An error has occured", "Username has to be less than 10 characters");
+            AlertMaker.alertERROR("An error has occured", "Username has to be less than 10 characters!");
+        } else if (!checkNumberLetter(username)) {
+            fldUsername.setText("");
+            AlertMaker.alertERROR("An error has occured", "Username can consist only of numbers and letters!");
         } else {
             Stage roomSelectPage = new Stage();
             roomSelectPage.setResizable(false);
@@ -93,7 +97,7 @@ public class LoginController {
                         e.printStackTrace();
                     }
 
-                    roomSelectPage.setOnCloseRequest((event)->{
+                    roomSelectPage.setOnCloseRequest((event) -> {
                         user.disconnectUser();
                         Platform.exit();
                     });
@@ -137,6 +141,12 @@ public class LoginController {
 
     public void closeWindow() {
         ((Stage) fldUsername.getScene().getWindow()).close();
+    }
+
+    private Boolean checkNumberLetter(String name) {
+        String regex = "^[a-zA-Z0-9]+$";
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(name).matches();
     }
 
 }

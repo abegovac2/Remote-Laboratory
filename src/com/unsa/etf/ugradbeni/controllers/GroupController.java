@@ -1,6 +1,5 @@
 package com.unsa.etf.ugradbeni.controllers;
 
-import com.unsa.etf.ugradbeni.models.Message;
 import com.unsa.etf.ugradbeni.models.Room;
 import com.unsa.etf.ugradbeni.models.User;
 import javafx.application.Platform;
@@ -16,7 +15,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
@@ -52,7 +50,7 @@ public class GroupController {
             Button group = new Button(room.getRoomName());
             group.setMinWidth(200);
             group.setMinHeight(200);
-            group.setOnAction((ActionEvent event) ->openNewChat(room));
+            group.setOnAction((ActionEvent event) -> openNewChat(room));
             pane.getChildren().add(group);
         }
 
@@ -93,7 +91,7 @@ public class GroupController {
                 }
 
 
-                newChatStage.setOnCloseRequest((event)->{
+                newChatStage.setOnCloseRequest((event) -> {
                     User.disconnectUser();
                     Platform.exit();
                 });
@@ -103,9 +101,9 @@ public class GroupController {
         };
 
         loadingTask.setOnSucceeded(workerStateEvent -> {
-                closeWindow();
-                newChatStage.setScene(new Scene(roots[0], USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
-                newChatStage.show();
+            closeWindow();
+            newChatStage.setScene(new Scene(roots[0], USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
+            newChatStage.show();
         });
 
         Parent secRoot = null;

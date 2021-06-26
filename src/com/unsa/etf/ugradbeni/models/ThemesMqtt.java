@@ -20,10 +20,7 @@ public enum ThemesMqtt {
     USER_REFRESH_RECIVE("/user/refresh/recive"),
 
     //trebaju jos za mbed
-    TO_PORT("/mbed/port"),
-    SEND_INFO("/mbed/info/send"),
-    RECIVE_INFO("/mbed/info/recive")
-    ;
+    SEND_INFO("/mbed/info");
 
 
     private String value;
