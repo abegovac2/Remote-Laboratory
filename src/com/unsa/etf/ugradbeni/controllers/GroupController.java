@@ -3,6 +3,7 @@ package com.unsa.etf.ugradbeni.controllers;
 import com.unsa.etf.ugradbeni.models.Message;
 import com.unsa.etf.ugradbeni.models.Room;
 import com.unsa.etf.ugradbeni.models.User;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
@@ -69,10 +71,7 @@ public class GroupController {
         Task<Boolean> loadingTask = new Task<Boolean>() {
             @Override
             protected Boolean call() {
-                //check other users
-                //List<Message> lastTenMsg = null;
                 try {
-                    //lastTenMsg =
                     User.getMessagesForRoom(room);
                 } catch (MqttException e) {
                     e.printStackTrace();
@@ -92,6 +91,13 @@ public class GroupController {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+
+                newChatStage.setOnCloseRequest((event)->{
+                    User.disconnectUser();
+                    Platform.exit();
+                });
+
                 return true;
             }
         };

@@ -50,11 +50,11 @@ public class ChatController {
     public Button btnRoomRefresh;
 
     private MessagingClient chatUser;
-    private SimpleStringProperty messageContent = new SimpleStringProperty("");
-    private String currentChatTopic;
+    private final SimpleStringProperty messageContent = new SimpleStringProperty("");
+    private final String currentChatTopic;
 
-    private User user;
-    private List<Message> last10;
+    private final User user;
+    private final List<Message> last10;
     private final Room currentRoom;
 
 
@@ -87,6 +87,12 @@ public class ChatController {
             bl.setText(room.getRoomName());
             bl.setOnAction((ActionEvent event) -> openNewChat(room));
             RoomList.getChildren().add(bl);
+        }
+
+        try {
+            user.setupConnectDisconnect(UserList);
+        } catch (MqttException e) {
+            e.printStackTrace();
         }
     }
 
@@ -210,10 +216,7 @@ public class ChatController {
         Task<Boolean> loadingTask = new Task<Boolean>() {
             @Override
             protected Boolean call() {
-                //check other users
-                //List<Message> lastTenMsg = null;
                 try {
-                    //lastTenMsg =
                     user.getMessagesForRoom(room);
                 } catch (MqttException e) {
                     e.printStackTrace();
@@ -233,6 +236,12 @@ public class ChatController {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                newChatStage.setOnCloseRequest((event)->{
+                    user.disconnectUser();
+                    Platform.exit();
+                });
+
                 return true;
             }
         };

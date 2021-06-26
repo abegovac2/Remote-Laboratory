@@ -3,6 +3,7 @@ package com.unsa.etf.ugradbeni.controllers;
 import com.unsa.etf.ugradbeni.alert.AlertMaker;
 import com.unsa.etf.ugradbeni.models.User;
 import com.unsa.etf.ugradbeni.models.MessagingClient;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -59,8 +60,8 @@ public class LoginController {
             fldUsername.setText("");
             AlertMaker.alertERROR("An error has occured", "Username has to be less than 10 characters");
         } else {
-            Stage homePageStage = new Stage();
-            homePageStage.setResizable(false);
+            Stage roomSelectPage = new Stage();
+            roomSelectPage.setResizable(false);
 
             final Parent[] roots = {null};
 
@@ -91,19 +92,25 @@ public class LoginController {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
+                    roomSelectPage.setOnCloseRequest((event)->{
+                        user.disconnectUser();
+                        Platform.exit();
+                    });
+
                     return true;
                 }
             };
 
             loadingTask.setOnSucceeded(workerStateEvent -> {
                 if (roots[0] == null) {
-                    homePageStage.close();
+                    roomSelectPage.close();
                     fldUsername.setText("");
                     AlertMaker.alertERROR("An error has occured", "A user with the username \"" + username + "\" already exist!");
                 } else {
                     closeWindow();
-                    homePageStage.setScene(new Scene(roots[0], USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
-                    homePageStage.show();
+                    roomSelectPage.setScene(new Scene(roots[0], USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
+                    roomSelectPage.show();
                 }
             });
 
@@ -115,9 +122,9 @@ public class LoginController {
                 e.printStackTrace();
             }
 
-            homePageStage.setScene(new Scene(secRoot, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
-            homePageStage.initModality(Modality.APPLICATION_MODAL);
-            homePageStage.show();
+            roomSelectPage.setScene(new Scene(secRoot, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
+            roomSelectPage.initModality(Modality.APPLICATION_MODAL);
+            roomSelectPage.show();
             Thread thread = new Thread(loadingTask);
             thread.start();
         }
@@ -131,36 +138,5 @@ public class LoginController {
     public void closeWindow() {
         ((Stage) fldUsername.getScene().getWindow()).close();
     }
-
-    /*private MessagingClient checkForDuplicateUsernames(String username) {
-        AtomicBoolean isTaken = new AtomicBoolean(false);
-        MessagingClient user = null;
-        String check = "", taken = "";
-        try {
-            HashMap<String, MqttOnRecive> mapOfFunctions = new HashMap<>();
-            mapOfFunctions.put("taken", (String topic, MqttMessage mqttMessage) -> isTaken.set(true));
-            user = new MessagingClient(UUID.randomUUID().toString(), mapOfFunctions);
-
-            check = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.CHECK + "/" + username;
-            taken = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.TAKEN + "/" + username;
-
-            user.subscribeToTopic(taken, null, 0);
-            user.sendMessage(check, "{}", 0);
-            //waits 2sec to get a response
-            Thread.sleep(2000);
-            user.unsubscribeFromTopic(taken, null);
-
-            if (isTaken.get()) {
-                user.disconnect();
-                user = null;
-            } else {
-                mapOfFunctions.remove("taken");
-            }
-
-        } catch (MqttException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return user;
-    }*/
 
 }

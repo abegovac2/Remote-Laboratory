@@ -1,5 +1,9 @@
 package com.unsa.etf.ugradbeni.models;
 
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
@@ -7,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class User {
@@ -40,7 +45,7 @@ public class User {
         userClient.subscribeToTopic(check, null, 0);
     }
 
-    private void setupConnectDisconnect() throws MqttException {
+    public void setupConnectDisconnect(VBox userList) throws MqttException {
         String connected = "" + ThemesMqtt.BASE + ThemesMqtt.USER_CONNECTED;
         String disconnected = "" + ThemesMqtt.BASE + ThemesMqtt.USER_DISCONNECTED;
 
@@ -48,22 +53,46 @@ public class User {
                 //every time a new user is connected he is added to a list of currently active users
                 new Thread(() -> {
                     String[] topicParts = topic.split("/");
-                    connectedUsers.add(topicParts[topicParts.length - 1]);
+                    String userName = topicParts[topicParts.length - 1];
+                    if (userList != null) {
+                        Button newUser = new Button(userName);
+                        Platform.runLater(()->userList.getChildren().add(newUser));
+                    }
+                    connectedUsers.add(userName);
                 }).start()
         );
 
         userClient.getOnReciveMap().put("disconnected", (String topic, MqttMessage mqttMessage) ->
-                //every time a user is disconnected he is omited form the list of active users
+                //every time a user is disconnected he is omitted form the list of active users
                 new Thread(() -> {
                     String[] topicParts = topic.split("/");
+                    String userName = topicParts[topicParts.length - 1];
+                    if (userList != null) {
+//                        Button aUser = new Button(userName);
+                        Platform.runLater(()->
+                                userList.getChildren().removeIf((Node node)->
+                                        node instanceof Button && ((Button) node).getText().equals(userName)));
+//                        Platform.runLater(()->userList.getChildren().remove(aUser));
+                    }
                     connectedUsers.remove(topicParts[topicParts.length - 1]);
                 }).start()
         );
 
-        userClient.sendMessage(connected + "/" + userName, "{}", 0);
-        userClient.subscribeToTopic(connected + "/+", null, 0);
-        userClient.subscribeToTopic(disconnected + "/+", null, 0);
+        if(userList == null) {
+            userClient.sendMessage(connected + "/" + userName, "{}", 0);
+            userClient.subscribeToTopic(connected + "/+", null, 0);
+            userClient.subscribeToTopic(disconnected + "/+", null, 0);
+        }
+    }
 
+    public void disconnectUser(){
+        String disconnected = "" + ThemesMqtt.BASE + ThemesMqtt.USER_DISCONNECTED + "/" + userName;
+        try {
+            userClient.sendMessage(disconnected, "{}", 0);
+            userClient.disconnect();
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupRefreshUsers() throws MqttException {
@@ -74,7 +103,7 @@ public class User {
                 new Thread(() -> {
                     try {
                         //to stop infinite loops
-                        if(topic.endsWith("recive")) return;
+                        if (topic.endsWith("recive")) return;
                         String message = "{ \"UserName\": \"" + userName + "\"}";
                         userClient.sendMessage(recive, message, 0);
                     } catch (MqttException e) {
@@ -91,11 +120,12 @@ public class User {
         userClient.setOnReciveMap(mapOfFunctions);
 
         setupUserNameCheck();
-        setupConnectDisconnect();
+        setupConnectDisconnect(null);
         setupRefreshUsers();
 
         refreshConnectedUsers();
         refreshActiveRooms();
+
     }
 
     public Set<String> getConnectedUsers() {
