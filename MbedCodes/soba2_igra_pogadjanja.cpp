@@ -3,12 +3,12 @@
 // SOBA2: Fun room
 //
 
-#define SUBSETUP "project225883/us/etf/message/soba2/setup/mbed"
-#define SUBGUESS "project225883/us/etf/message/soba2/mbed/guess"
-#define SUBRUNNINGTIME "project225883/us/etf/message/soba2/mbed/timewant"
+#define SUBSETUP "project225883/us/etf/message/soba2/mbed/info"
+#define SUBGUESS "project225883/us/etf/message/soba2/mbed/portguess"
+#define SUBRUNNINGTIME "project225883/us/etf/message/soba2/mbed/porttimewant"
 
-#define PUBSETUP "project225883/us/etf/message/soba2/setup/mbed"
-#define PUBGAMEINFO "project225883/us/etf/message/soba2/mbed/info"
+#define PUBSETUP "project225883/us/etf/message/soba2/mbed"
+#define PUBGAMEINFO "project225883/us/etf/message/soba2/mbed"
 #define PUBRUNNINGTIME "project225883/us/etf/message/soba2/mbed/time"
 
 #include "mbed.h"
@@ -67,7 +67,7 @@ void guessing(MQTT::MessageData& md)
 {
     if(gameon && !pause_game){
         MQTT::Message &message = md.message;
-        printf("Mjesto %.*s\r\n", message.payloadlen, (char*)message.payload);
+        printf("%d | Mjesto %.*s\r\n", playing, message.payloadlen, (char*)message.payload);
         int guessplace=atoi((char*)message.payload);
         if(guessplace<25 && guessplace>=0){
             if(matrix[guessplace]==1) hits[playing]++;
@@ -145,8 +145,8 @@ int main(int argc, char* argv[])
     char buf[100];
     while(1) {
         if (!gameon) {
-            if(winner!=-1) sprintf(buf, "{\"Pobjednik\": \"Pobjednik igrac: %d\"}", winner);
-            else sprintf(buf, "{\"Nerijeseno\"}");
+            if(winner!=-1) sprintf(buf, "{\"Message\": \"[Igra]: POBJEDNIK IGRAC: %d\"}", winner);
+            else sprintf(buf, "{\"Message\": \"Nerijeseno\"}");
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -154,9 +154,10 @@ int main(int argc, char* argv[])
             message.payloadlen = strlen(buf);
             rc = client.publish(PUBGAMEINFO, message);
             reset_game();
+            printf("Poslana info poruka o pobjedniku!\n");
         }
         if(pause_game && gameon){
-            sprintf(buf, "{\"Stanje\" \"Trenutno stanje: \"}");
+            sprintf(buf, "{\"Message\": \"Trenutno stanje: \"}");
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
@@ -165,16 +166,17 @@ int main(int argc, char* argv[])
             rc = client.publish(PUBGAMEINFO, message);
             int red=1;
             for(int i=0;i<25;i+=5){
-                sprintf(buf, "{\"Message\" \"Red %d: %d %d %d %d %d\"}", red++, matrix[i], matrix[i+1], matrix[i+2], matrix[i+3], matrix[i+4]);
+                sprintf(buf, "{\"Message\": \"Red %d: %d %d %d %d %d\"}", red++, hits[i], hits[i+1], hits[i+2], hits[i+3], hits[i+4]);
                 message.qos = MQTT::QOS0;
                 message.retained = false;
                 message.dup = false;
                 message.payload = (void*)buf;
                 message.payloadlen = strlen(buf);
                 rc = client.publish(PUBGAMEINFO, message);
+                
                 wait(0.01);
             }
-            sprintf(buf, "{\"Rezultat\": \"Igrac 0: %d pogodjenih | Igrac 1: %d pogodjenih\"}", hits[0], hits[1]);
+            sprintf(buf, "{\"Message\": \"Igrac 0: %d pogodjenih | Igrac 1: %d pogodjenih\"}", hits[0], hits[1]);
                 message.qos = MQTT::QOS0;
                 message.retained = false;
                 message.dup = false;
@@ -182,26 +184,29 @@ int main(int argc, char* argv[])
                 message.payloadlen = strlen(buf);
                 rc = client.publish(PUBGAMEINFO, message);
             pause_game=false;
+            printf("Poslana info poruka o stats!\n");
         }
         if(mqqt_wants_time){
             mqqt_wants_time=false;
-            sprintf(buf, "{\"Stanje\": \"Sistem u pripravnosti: %d minuta\"}", running_time_in_minutes);
+            sprintf(buf, "{\"Message\": \"[mbed]: Sistem u pripravnosti: %d minuta\"}", running_time_in_minutes);
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
             message.payload = (void*)buf;
             message.payloadlen = strlen(buf);
             rc = client.publish(PUBRUNNINGTIME, message);
+            printf("Poslana poruka o vremenu pripravnosti (%d)\n", running_time_in_minutes);
         }
         if(data_to_send){
             data_to_send=false;
-            sprintf(buf, "{\"Topics\": [\"info\",\"time\"]}");
+            sprintf(buf, "{\"Message\": \"[mbed]: Teme: timewant, guess\"}");
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
             message.payload = (void*)buf;
             message.payloadlen = strlen(buf);
             rc = client.publish(PUBSETUP, message);
+            printf("Poslana info poruka!\n");
         }    
         
         rc = client.subscribe(SUBSETUP, MQTT::QOS0, subsetup_fun);
