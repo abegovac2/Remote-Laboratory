@@ -176,19 +176,20 @@ public class ChatController {
         MqttOnRecive recive = (String theme, MqttMessage mqttMessage) ->
                 new Thread(() -> {
                     try {
+                        if(theme.endsWith("info")) return;
                         Button bl = new Button();
-
                         JSONObject msg = new JSONObject(new String(mqttMessage.getPayload()));
                         String text = msg.getString("Message");
                         bl.setText(text);
                         Platform.runLater(() -> ChatList.getChildren().add(bl));
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        //e.printStackTrace();
                     }
                 }).start();
 
         functions.put("message", recive);
         functions.put(currentRoom.getRoomName(), recive);
+        functions.put("mbed", recive);
     }
 
     public void openNewChat(Room room) {
