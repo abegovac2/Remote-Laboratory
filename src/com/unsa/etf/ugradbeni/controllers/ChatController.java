@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -89,7 +90,7 @@ public class ChatController {
         }
     }
 
-    public ChatController(List<Message> lastTenMsg, User user, Room room) {
+    public ChatController(User user, Room room) {
         this.last10 = user.getLast10();
         this.user = user;
         this.currentRoom = room;
@@ -110,19 +111,63 @@ public class ChatController {
             return;
         }
         messageContent.set("");
+
+        if(message.startsWith("!port")) sendToMbed(message);
+        else if(message.startsWith("!info")) sendForInfo();
+        else sendRegular(message,null);
+
+    }
+
+    private void sendToMbed(String message) {
+        StringBuilder port = new StringBuilder();
+        char[] string = message.toCharArray();
+        int i = 1;
+        while(string[i] != ':'){
+            port.append(string[i]);
+            ++i;
+        }
+        String sendToTopic = "" + ThemesMqtt.BASE + ThemesMqtt.MESSAGE + "/" + this.currentRoom.getRoomName() + "/mbed/" + port.toString();
+        StringBuilder value = new StringBuilder();
+        ++i;
+        while(i < message.length()){
+            if(string[i] != ' ') value.append(string[i]);
+            ++i;
+        }
+        if(value.toString().isEmpty()) return;
         try {
-            Message sendMessage = new Message(-1, "[" + user.getUserName() + "]: " + message, currentRoom.getId());
-            chatUser.sendMessage(currentChatTopic, sendMessage.toString(), 0);
+            chatUser.sendMessage(sendToTopic, value.toString(), 0);
+            sendRegular(message, "mbed");
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendForInfo(){
+        String info = currentChatTopic + ThemesMqtt.USER_SEND;
+        try {
+            chatUser.sendMessage(info, "{}", 0);
+            sendRegular("!info", "mbed");
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendRegular(String message, String toMbed) {
+        Message sendMessage = new Message(-1, "[" + user.getUserName() + "]: " + message, currentRoom.getId());
+        try {
+            String topic = currentChatTopic + (toMbed == null ? "" : "/" + toMbed);
+            chatUser.sendMessage(topic, sendMessage.toString(), 0);
         } catch (JSONException | MqttException e) {
             e.printStackTrace();
         }
+
     }
 
     private void chatUserSetup() throws MqttException {
         HashMap<String, MqttOnRecive> functions = new HashMap<>();
         chatUser = new MessagingClient(user.getUserName(), functions);
-        chatUser.subscribeToTopic(currentChatTopic, null, 0);
-        functions.put("message", (String theme, MqttMessage mqttMessage) ->
+        chatUser.subscribeToTopic(currentChatTopic + "/#", null, 0);
+        MqttOnRecive recive = (String theme, MqttMessage mqttMessage) ->
                 new Thread(() -> {
                     try {
                         Button bl = new Button();
@@ -134,7 +179,26 @@ public class ChatController {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                }).start();
+
+        functions.put("message", recive);
+        functions.put(currentRoom.getRoomName(), recive);
+
+        functions.put("info", (String theme, MqttMessage mqttMessage) ->
+                new Thread(() -> {
+                    try {
+                        if(theme.endsWith("send")) return;
+                        Button bl = new Button();
+
+                        JSONObject msg = new JSONObject(new String(mqttMessage.getPayload()));
+                        String text = msg.getString("Message");
+                        bl.setText(text);
+                        Platform.runLater(() -> ChatList.getChildren().add(bl));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }).start());
+
     }
 
     public void openNewChat(Room room) {
@@ -147,15 +211,16 @@ public class ChatController {
             @Override
             protected Boolean call() {
                 //check other users
-                List<Message> lastTenMsg = null;
+                //List<Message> lastTenMsg = null;
                 try {
-                    lastTenMsg = user.getMessagesForRoom(room);
+                    //lastTenMsg =
+                    user.getMessagesForRoom(room);
                 } catch (MqttException e) {
                     e.printStackTrace();
                 }
 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
-                ChatController chat = new ChatController(lastTenMsg, user, room);
+                ChatController chat = new ChatController(user, room);
                 loader.setController(chat);
                 try {
                     chatUser.disconnect();
@@ -200,8 +265,8 @@ public class ChatController {
 
     @FXML
     public void roomRefresh(ActionEvent event) {
-        user.refreshActiveRooms();
         new Thread(() -> {
+            user.refreshActiveRooms();
             Platform.runLater(() -> {
                 RoomList.getChildren().clear();
                 RoomList.getChildren().add(btnRoomRefresh);
@@ -219,8 +284,8 @@ public class ChatController {
 
     @FXML
     public void userRefresh(ActionEvent event) {
-        user.refreshConnectedUsers();
         new Thread(() -> {
+            user.refreshConnectedUsers();
             Platform.runLater(() -> {
                 UserList.getChildren().clear();
                 UserList.getChildren().add(btnUsersRefresh);

@@ -1,6 +1,5 @@
 package com.unsa.etf.ugradbeni.models;
 
-import com.unsa.etf.ugradbeni.models.MqttOnRecive;
 import org.eclipse.paho.client.mqttv3.*;
 
 import java.util.Map;
@@ -83,7 +82,6 @@ public class MessagingClient implements MqttCallback {
                     e.printStackTrace();
                 }
             }
-
         }
     }
 

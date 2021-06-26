@@ -70,15 +70,16 @@ public class GroupController {
             @Override
             protected Boolean call() {
                 //check other users
-                List<Message> lastTenMsg = null;
+                //List<Message> lastTenMsg = null;
                 try {
-                    lastTenMsg = User.getMessagesForRoom(room);
+                    //lastTenMsg =
+                    User.getMessagesForRoom(room);
                 } catch (MqttException e) {
                     e.printStackTrace();
                 }
 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
-                ChatController chat = new ChatController(lastTenMsg, User, room);
+                ChatController chat = new ChatController(User, room);
                 loader.setController(chat);
 
                 try {

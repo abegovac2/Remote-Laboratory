@@ -66,13 +66,15 @@ public class User {
 
     }
 
-    private void setupRefreshUsers() {
-        String recive = "" + ThemesMqtt.BASE + ThemesMqtt.RECIVE_REFRESH;
-        String send = "" + ThemesMqtt.BASE + ThemesMqtt.SEND_REFRESH;
+    private void setupRefreshUsers() throws MqttException {
+        String recive = "" + ThemesMqtt.BASE + ThemesMqtt.USER_RECIVE;
+        String send = "" + ThemesMqtt.BASE + ThemesMqtt.USER_SEND;
 
-        userClient.getOnReciveMap().put("refresh", (String topic, MqttMessage mqttMessage) ->
+        userClient.getOnReciveMap().put("user", (String topic, MqttMessage mqttMessage) ->
                 new Thread(() -> {
                     try {
+                        //to stop infinite loops
+                        if(topic.endsWith("recive")) return;
                         String message = "{ \"UserName\": \"" + userName + "\"}";
                         userClient.sendMessage(recive, message, 0);
                     } catch (MqttException e) {
@@ -80,29 +82,9 @@ public class User {
                     }
                 }).start()
         );
+
+        userClient.subscribeToTopic(send, null, 0);
     }
-
-    /*
-    private void setupRefreshRooms() throws MqttException {
-        String recive = "" + ThemesMqtt.BASE + ThemesMqtt.ROOM_REFRESH_RECIVE;
-
-        userClient.getOnReciveMap().put("recive", (String topic, MqttMessage mqttMessage) ->
-                new Thread(() -> {
-                    JSONObject obj = new JSONObject(new String(mqttMessage.getPayload()));
-                    JSONArray array = obj.getJSONArray("ListOfRooms");
-
-                    for(int i = 0; i < array.length(); ++i){
-                        obj = array.getJSONObject(i);
-                        String roomName = obj.getString("RoomName");
-                        int roomId = obj.getInt("RoomId");
-                        Room room = new Room(roomId, roomName);
-                        activeRooms.add(room);
-                    }
-                }).start()
-        );
-
-        userClient.subscribeToTopic(recive,null, 0);
-    }*/
 
     public void setupUserMqtt() throws MqttException {
         HashMap<String, MqttOnRecive> mapOfFunctions = new HashMap<>();
@@ -156,16 +138,16 @@ public class User {
         this.chatClient = chatClient;
     }
 
+    //call this function within another thread
     public void refreshConnectedUsers() {
         try {
-            String recive = "" + ThemesMqtt.BASE + ThemesMqtt.RECIVE_REFRESH;
-            String send = "" + ThemesMqtt.BASE + ThemesMqtt.SEND_REFRESH;
+            String recive = "" + ThemesMqtt.BASE + ThemesMqtt.USER_RECIVE;
+            String send = "" + ThemesMqtt.BASE + ThemesMqtt.USER_SEND;
 
-            MqttOnRecive function = userClient.getOnReciveMap().get("refresh");
-            userClient.getOnReciveMap().remove("refresh");
+            MqttOnRecive function = userClient.getOnReciveMap().get("user");
             userClient.unsubscribeFromTopic(send, null);
 
-            userClient.getOnReciveMap().put("refresh", (String topic, MqttMessage mqttMessage) ->
+            userClient.getOnReciveMap().put("user", (String topic, MqttMessage mqttMessage) ->
                     new Thread(() -> {
                         try {
                             JSONObject obj = new JSONObject(new String(mqttMessage.getPayload()));
@@ -181,11 +163,10 @@ public class User {
             userClient.sendMessage(send, "{}", 0);
 
             //stops the tread so it can recive all refresh actions
-            Thread.sleep(4000);
+            Thread.sleep(5000);
 
-            userClient.getOnReciveMap().remove("refresh");
-            userClient.getOnReciveMap().put("refresh", function);
             userClient.unsubscribeFromTopic(recive, null);
+            userClient.getOnReciveMap().put("user", function);
             userClient.subscribeToTopic(send, null, 0);
 
         } catch (MqttException | InterruptedException e) {
@@ -194,6 +175,7 @@ public class User {
         connectedUsers.add(userName);
     }
 
+    //call this function within another thread
     public void refreshActiveRooms() {
         try {
             activeRooms = new HashSet<>();
@@ -237,6 +219,7 @@ public class User {
         this.last10 = last10;
     }
 
+    //call this function within another thread
     public List<Message> getMessagesForRoom(Room room) throws MqttException {
         last10 = new ArrayList<>();
 
