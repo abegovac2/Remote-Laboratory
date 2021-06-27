@@ -132,9 +132,17 @@ public class ChatController {
 
             String text = last10.get(i).getMessage();
             String mess = "";
-            if (text.length() > 40) {
-                for (int j = 0; j < text.length() - 40; j += 40) {
-                    mess += text.substring(j, j + 40) + "\n";
+            if (text.length() > 50) {
+                int x = (int)(Math.ceil(text.length() / 50));
+                x++;
+                int j = 0;
+                while(x!=0){
+                    if(j+50 > text.length())
+                        mess += text.substring(j) + "\n";
+                    else
+                        mess += text.substring(j, j + 50) + "\n";
+                    j+=50;
+                    x--;
                 }
             } else
                 mess = text;
@@ -290,9 +298,17 @@ public class ChatController {
 
 
                         String mess = "";
-                        if (text.length() > 40) {
-                            for (int i = 0; i < text.length() - 40; i += 40) {
-                                mess += text.substring(i, i + 40) + "\n";
+                        if (text.length() > 50) {
+                            int x = (int)(Math.ceil(text.length() / 50));
+                            x++;
+                            int j = 0;
+                            while(x!=0){
+                                if(j+50 > text.length())
+                                    mess += text.substring(j  ) + "\n";
+                                else
+                                    mess += text.substring(j, j + 50) + "\n";
+                                j+=50;
+                                x--;
                             }
                         } else
                             mess = text;
