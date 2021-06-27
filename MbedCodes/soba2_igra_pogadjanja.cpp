@@ -39,11 +39,11 @@ int matrix[25];
 
 bool data_to_send=false;
 
-void subsetup_fun(MQTT::MessageData& md){
+void subsetup_fun(MQTT::MessageData& md){ // user requires info
     data_to_send=true;
 }
 
-void reset_game(){
+void reset_game(){ // reset all values to default
     winner=-1;
     gameon=true;
     playing=0;
@@ -58,7 +58,7 @@ void reset_game(){
     }
 }
 
-void game_over(){
+void game_over(){ // calculating the winner
     if(hits[0]>hits[1]) winner=0;
     else if(hits[1]>hits[0]) winner=1;
     else winner=-1;
@@ -66,8 +66,7 @@ void game_over(){
     gameon=false;
 }
 
-void guessing(MQTT::MessageData& md)
-{
+void guessing(MQTT::MessageData& md){ // processing hits 
     if(gameon && !pause_game){
         MQTT::Message &message = md.message;
         printf("Igrac %d | Mjesto %.*s\r\n", playing+1, message.payloadlen, (char*)message.payload);
@@ -83,8 +82,8 @@ void guessing(MQTT::MessageData& md)
         }
         
         attempts[playing]++;
-        playing=!playing;
-        if(attempts[1]==5 || (hits[0]+hits[1])==3) game_over();
+        playing=!playing; //switching player
+        if(attempts[1]==5 || (hits[0]+hits[1])==3) game_over(); //conditions to end the game
         if(attempts[0]==attempts[1]) pause_game=true; //refresh info every round
     }
 }
@@ -113,6 +112,7 @@ int main(int argc, char* argv[])
     printf("Ugradbeni sistemi\r\n");
     printf("SOBA 2: Igra pogadjanja\r\n\r\n");
     
+    //mqtt configuration
     NetworkInterface *network;
     network = NetworkInterface::get_default_instance();
     
@@ -121,7 +121,6 @@ int main(int argc, char* argv[])
     }
 
     MQTTNetwork mqttNetwork(network);
-
     MQTT::Client<MQTTNetwork, Countdown> client(mqttNetwork);
 
     const char* hostname = "broker.hivemq.com";
@@ -136,6 +135,7 @@ int main(int argc, char* argv[])
     data.clientID.cstring = "proizvoljno";
     data.username.cstring = "";
     data.password.cstring = "";
+    /////////////////////////////////////////////////////////////////////////
     if ((rc = client.connect(data)) != 0)
         printf("rc from MQTT connect is %d\r\n", rc);
 
@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
     // QoS 0
     char buf[100];
     while(1) {
-        if(pause_game && gameon){
+         if(pause_game && gameon){ // displaying stats on every full round
             sprintf(buf, "{\"Message\": \"__TRENUTNO STANJE__ \"}");
             message.qos = MQTT::QOS0;
             message.retained = false;
@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
             rc = client.publish(PUBGAMEINFO, message);
             int red=1;
             int table[25];
-            for(int i=0; i<25; i++){ 
+            for(int i=0; i<25; i++){  //collecting data allowed to display (ignoring the hidden positions)
                 if(matrix[i]==1) table[i]=0;
                 else table[i]=matrix[i];
             }
@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
                 message.payloadlen = strlen(buf);
                 rc = client.publish(PUBGAMEINFO, message);
                 
-                wait(0.5);
+                wait(0.5); //needed because of message shuffling
             }
                 sprintf(buf, "{\"Message\": \"(!) Igrac 1: %d pogodjenih\"}", hits[0]);
                 message.qos = MQTT::QOS0;
@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
             pause_game=false;
             printf("Poslana info poruka o stats!\n");
         }
-        if(mqqt_wants_time){
+        if(mqqt_wants_time){ // system running time info
             mqqt_wants_time=false;
             sprintf(buf, "{\"Message\": \"[mbed]: %d minuta od zadnjeg restarta\"}", running_time_in_minutes());
             message.qos = MQTT::QOS0;
@@ -207,7 +207,7 @@ int main(int argc, char* argv[])
             rc = client.publish(PUBRUNNINGTIME, message);
             printf("Poslana poruka o vremenu pripravnosti (%d)\n", running_time_in_minutes());
         }
-        if(data_to_send){
+        if(data_to_send){ //global info data
             data_to_send=false;
             sprintf(buf, "{\"Message\": \"[mbed]: Teme: timewant, guess\"}");
             message.qos = MQTT::QOS0;
@@ -218,7 +218,7 @@ int main(int argc, char* argv[])
             rc = client.publish(PUBSETUP, message);
             printf("Poslana info poruka!\n");
         }    
-        if (!gameon) {
+        if (!gameon) { // game over, displaying name of the winner
             if(winner!=-1) sprintf(buf, "{\"Message\": \"[Igra]: POBJEDNIK IGRAC: %d\"}", winner+1);
             else sprintf(buf, "{\"Message\": \"Nerijeseno\"}");
             message.qos = MQTT::QOS0;
