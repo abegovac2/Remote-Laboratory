@@ -4,13 +4,13 @@
 //
 
 #define SUBNTCVOLTAGE "theme/ntcvoltage" //needed for simulating physical input of ntc voltage
-#define SUBRUNNINGTIME "project225883/us/etf/message/soba1/mbed/porttimewant"
-#define SUBSETUP "project225883/us/etf/message/soba1/mbed/info"
+#define SUBRUNNINGTIME "project225883/us/etf/message/2PRegulator/mbed/porttimewant"
+#define SUBSETUP "project225883/us/etf/message/2PRegulator/mbed/info"
 
 
-#define PUBSETUP "project225883/us/etf/message/soba1/mbed"
-#define PUBHEATERSTATE "project225883/us/etf/message/soba1/mbed/heater"
-#define PUBRUNNINGTIME "project225883/us/etf/message/soba1/mbed/time"
+#define PUBSETUP "project225883/us/etf/message/2PRegulator/mbed"
+#define PUBHEATERSTATE "project225883/us/etf/message/2PRegulator/mbed/heater"
+#define PUBRUNNINGTIME "project225883/us/etf/message/2PRegulator/mbed/time"
 
 #include "mbed.h"
 
@@ -48,6 +48,7 @@ void heater_regulation(MQTT::MessageData& md){ // 2_position_regulator logic
     25C -> Vntc = 2.98689 V
     27C -> Vntc = 2.95861 V
     */
+    stanje=23;
     MQTT::Message &message = md.message;
     printf("Napon na NTC %.*s\r\n", message.payloadlen, (char*)message.payload);
     v_ntc=atof((char*)message.payload);
@@ -56,17 +57,17 @@ void heater_regulation(MQTT::MessageData& md){ // 2_position_regulator logic
     if(v_ntc < 2.98689){ // > 25 C
         heater=false;
         stanje+=2;
-        printf("25 C+ | Grijac: OFF\n");
+        printf("%d C+ | Grijac: OFF\n",stanje);
     }
     else if(v_ntc < 3.03722){ // [21 C, 25 C]
         heater=false;
         stanje+=0;
-        printf("23+-2 C | Grijac: OFF\n");
+        printf("%d+-2 C | Grijac: OFF\n",stanje);
     }
     else{ // < 21 C
         heater=true;
         stanje-=2;
-        printf("21 C- | Grijac: ON\n");
+        printf("%d C- | Grijac: ON\n",stanje);
     }
 }
 
