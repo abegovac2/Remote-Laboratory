@@ -42,7 +42,7 @@ void subsetup_fun(MQTT::MessageData& md){
     data_to_send=true;
 }
 
-void reset_system(){
+void reset_system(){ //setting default values
     time_in_min=0;
     info=-1;
     info2=-1;
@@ -54,7 +54,7 @@ void reset_system(){
 }
 
 
-void park_action(MQTT::MessageData& md){
+void park_action(MQTT::MessageData& md){ // vehicle registration system
     MQTT::Message &message = md.message;
     printf("Usluga: %.*s\r\n", message.payloadlen, (char*)message.payload);
     int i;
@@ -71,7 +71,7 @@ void park_action(MQTT::MessageData& md){
     if(i==20) info=2; //no free space
 }
 
-void park_exit(MQTT::MessageData& md){
+void park_exit(MQTT::MessageData& md){ // calculating ticket price and freeing parking space
     MQTT::Message &message = md.message;
     printf("Usluga: %.*s\r\n", message.payloadlen, (char*)message.payload);
     int chosen_place=atoi((char*)message.payload);
@@ -102,7 +102,7 @@ void wantTime(MQTT::MessageData& md){
     mqqt_wants_time=true;
 }
 
-int running_time_in_minutes(){
+int running_time_in_minutes(){ //returns time passed since the last system restart
     return block_of_30min*30+time_running.read()/60;
 }
 
@@ -120,6 +120,7 @@ int main(int argc, char* argv[])
     printf("Ugradbeni sistemi\r\n");
     printf("SOBA 3: Parking\r\n\r\n");
 
+    //mqtt configuration
     NetworkInterface *network;
     network = NetworkInterface::get_default_instance();
     
@@ -128,7 +129,6 @@ int main(int argc, char* argv[])
     }
 
     MQTTNetwork mqttNetwork(network);
-
     MQTT::Client<MQTTNetwork, Countdown> client(mqttNetwork);
 
     const char* hostname = "broker.hivemq.com";
@@ -143,6 +143,7 @@ int main(int argc, char* argv[])
     data.clientID.cstring = "proizvoljno";
     data.username.cstring = "";
     data.password.cstring = "";
+    ///////////////////////////////////////////////////////
     if ((rc = client.connect(data)) != 0)
         printf("rc from MQTT connect is %d\r\n", rc);
 
@@ -163,7 +164,7 @@ int main(int argc, char* argv[])
     // QoS 0
     char buf[100];
     while(1) {
-        if(info!=-1){
+        if(info!=-1){ // parking info message
             if(info==1) sprintf(buf, "{\"Message\": \"Zauzeli ste mjesto: %d\"}", tmp_car);
             else if(info==2) sprintf(buf, "{\"Message\": \"Nema slobodnog mjesta!\"}");
             message.qos = MQTT::QOS0;
@@ -175,7 +176,7 @@ int main(int argc, char* argv[])
             info=-1, tmp_car=-1;
             printf("Auto zabiljezeno\n");
         }
-        if(info2!=-1){
+        if(info2!=-1){  // parking exit , ticket price display
             sprintf(buf, "{\"Message\": \"Cijena parkinga: %.2f KM\"}",ticket); // Provedeno minuta: , ticket, time_in_min);
             message.qos = MQTT::QOS0;
             message.retained = false;
@@ -185,7 +186,7 @@ int main(int argc, char* argv[])
             rc = client.publish(PUBPARKING, message);
             info2=-1, time_in_min=0;
         }
-        if(data_to_send){
+        if(data_to_send){ // global room info 
             data_to_send=false;
             sprintf(buf, "{\"Message\": \"[mbed]: portexit, portparking, info\"}");
             message.qos = MQTT::QOS0;
@@ -195,7 +196,7 @@ int main(int argc, char* argv[])
             message.payloadlen = strlen(buf);
             rc = client.publish(PUBSETUP, message);
         } 
-        if(mqqt_wants_time){
+        if(mqqt_wants_time){ // system time running
             mqqt_wants_time=false;
             sprintf(buf, "{\"Message\": \"[mbed]: %d minuta od zadnjeg restarta\"}", running_time_in_minutes());
             message.qos = MQTT::QOS0;
