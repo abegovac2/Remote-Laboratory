@@ -55,6 +55,8 @@ public class User {
                     String userName = topicParts[topicParts.length - 1];
                     if (userList != null) {
                         Button newUser = new Button(userName);
+                        newUser.setMinHeight(40);
+                        newUser.setMinWidth(155);
                         Platform.runLater(() -> userList.getChildren().add(newUser));
                     }
                     connectedUsers.add(userName);

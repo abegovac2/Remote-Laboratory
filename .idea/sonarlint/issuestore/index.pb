@@ -7,8 +7,6 @@ G
 .idea/libraries/lib.xml,5\6\563a23e064e6fdd2d09bd0c2d99ef456aff71a31
 D
 RemoteLaboratory.iml,5\3\53716a931badcc3ebcaa7026bbbfcffe0ec5e482
-f
-6src/com/unsa/etf/ugradbeni/controllers/Controller.java,f\9\f9a237ad4b115013f73c6c0e06539191079019cd
 [
 +src/com/unsa/etf/ugradbeni/models/Room.java,a\9\a91d9b4a216b167783f277317101d794e7ecd1a1
 ^

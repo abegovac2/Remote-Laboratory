@@ -10,13 +10,19 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -32,7 +38,8 @@ import static javafx.scene.control.PopupControl.USE_COMPUTED_SIZE;
 
 public class ChatController {
     @FXML
-    public VBox ChatList;
+    public Label currRoom;
+
     @FXML
     public VBox UserList;
     @FXML
@@ -43,6 +50,9 @@ public class ChatController {
     public TextField MessageField;
     @FXML
     public Label usernameLbl;
+
+    @FXML
+    public ScrollPane scrollChat;
 
     @FXML
     public Button btnUsersRefresh;
@@ -56,12 +66,27 @@ public class ChatController {
     private final User user;
     private final List<Message> last10;
     private final Room currentRoom;
-
+    private int brojPoruke = 0;
+    private GridPane chat = new GridPane();
 
     @FXML
     public void initialize() {
+        currRoom.setText("Current room: " + currentRoom.getRoomName());
+
         usernameLbl.setText(user.getUserName());
         MessageField.textProperty().bindBidirectional(messageContent);
+
+        chat.setStyle("-fx-background-color: #2A2E37");
+        chat.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        chat.setVgap(5.);
+        ColumnConstraints c1 = new ColumnConstraints();
+        c1.setPercentWidth(800);
+        chat.getColumnConstraints().add(c1);
+        scrollChat.setContent(chat);
+        scrollChat.setFitToWidth(true);
+
+
+        chat.heightProperty().addListener(observable -> scrollChat.setVvalue(1D));
 
         try {
             chatUserSetup();
@@ -70,20 +95,65 @@ public class ChatController {
         }
 
         for (int i = last10.size() - 1; i >= 0; --i) {
-            Button bl = new Button();
-            bl.setText(last10.get(i).getMessage());
-            ChatList.getChildren().add(bl);
+            BubbledLabel bl = new BubbledLabel();
+            bl.getStyleClass().add("chat-bubble");
+
+            String text = last10.get(i).getMessage();
+            String mess = "";
+            if(text.length() > 40)
+            {
+                for(int j=0; j < text.length()-40; j+=40){
+                    mess+=text.substring(j,j+40)+"\n";
+                }
+            }
+            else
+                mess = text;
+            bl.setText(mess);
+
+            GridPane.setHalignment(bl,   HPos.LEFT );
+
+            Image img = new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR277JJUkU44zs2ln_Bw37bt5V_gY-XWpF3HQ&usqp=CAU");
+            Circle cir2 = new Circle(40,30,20);
+            cir2.setStroke(Color.SEAGREEN);
+            cir2.setFill(Color.SNOW);
+            cir2.setEffect(new DropShadow(+4d, 0d, +2d, Color.DARKSEAGREEN));
+            cir2.setFill(new ImagePattern(img));
+
+            HBox x = new HBox();
+            x.setSpacing(3);
+            x.getChildren().add(cir2);
+            x.getChildren().add(bl);
+
+            chat.addRow(brojPoruke++, x);
+
+
+
+
+
+
+//            Button bl = new Button();
+//            bl.setText(last10.get(i).getMessage());
+            //  ChatList.getChildren().add(bl);
         }
+//        for (int i = last10.size() - 1; i >= 0; --i) {
+//            Button bl = new Button();
+//            bl.setText(last10.get(i).getMessage());
+//            ChatList.getChildren().add(bl);
+//        }
 
         for (String user1 : user.getConnectedUsers()) {
             Button bl = new Button();
             bl.setText(user1);
+            bl.setMinHeight(40);
+            bl.setMinWidth(155);
             UserList.getChildren().add(bl);
         }
 
         for (Room room : user.getActiveRooms()) {
             if (room.equals(currentRoom)) continue;
             Button bl = new Button();
+            bl.setMinHeight(40);
+            bl.setMinWidth(155);
             bl.setText(room.getRoomName());
             bl.setOnAction((ActionEvent event) -> openNewChat(room));
             RoomList.getChildren().add(bl);
@@ -107,7 +177,7 @@ public class ChatController {
     @FXML
     public void sendAction(ActionEvent actionEvent) {
         String message = messageContent.get().trim();
-
+        System.out.println("DUZINA PORUKE: " + message.length());
         if (message.length() > 255) {
             AlertMaker.alertINFORMATION("Notice", "Message can't have more than 255 character.");
             return;
@@ -177,11 +247,41 @@ public class ChatController {
                 new Thread(() -> {
                     try {
                         if(theme.endsWith("info")) return;
-                        Button bl = new Button();
+
+                        BubbledLabel bl = new BubbledLabel();
+                        bl.getStyleClass().add("chat-bubble");
+
                         JSONObject msg = new JSONObject(new String(mqttMessage.getPayload()));
+
+                        System.out.println(msg);
+
                         String text = msg.getString("Message");
-                        bl.setText(text);
-                        Platform.runLater(() -> ChatList.getChildren().add(bl));
+                        String mess = "";
+                        if(text.length() > 40)
+                        // mess = text.substring(0,15) + "\n" + text.substring(15);
+                        {
+                            for(int i=0; i < text.length()-40; i+=40){
+                                mess+=text.substring(i,i+40)+"\n";
+                            }
+                        }
+                        else
+                            mess = text;
+                        bl.setText(mess);
+                        GridPane.setHalignment(bl,   HPos.LEFT );
+//
+                        Image img = new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR277JJUkU44zs2ln_Bw37bt5V_gY-XWpF3HQ&usqp=CAU");
+                        Circle cir2 = new Circle(40,30,20);
+                        cir2.setStroke(Color.SEAGREEN);
+                        cir2.setFill(Color.SNOW);
+                        cir2.setEffect(new DropShadow(+4d, 0d, +2d, Color.DARKSEAGREEN));
+                        cir2.setFill(new ImagePattern(img));
+
+                        HBox x = new HBox();
+                        x.setSpacing(3);
+                        x.getChildren().add(cir2);
+                        x.getChildren().add(bl);
+
+                        Platform.runLater(() -> chat.addRow(brojPoruke++, x));
                     } catch (JSONException e) {
                         //e.printStackTrace();
                     }
@@ -197,6 +297,7 @@ public class ChatController {
         newChatStage.setResizable(false);
 
         final Parent[] roots = {null};
+        currRoom.setText("Current room: " + room.getRoomName());
 
         Task<Boolean> loadingTask = new Task<Boolean>() {
             @Override
@@ -259,7 +360,12 @@ public class ChatController {
     }
 
     public void closeWindow() {
-        ((Stage) ChatList.getScene().getWindow()).close();
+        ((Stage) chat.getScene().getWindow()).close();
+    }
+    public void closeAction() {
+        ((Stage) chat.getScene().getWindow()).close();
+        user.disconnectUser();
+        Platform.exit();
     }
 
     @FXML
@@ -273,6 +379,8 @@ public class ChatController {
             for (Room room : user.getActiveRooms()) {
                 if (room.equals(currentRoom)) continue;
                 Button bl = new Button();
+                bl.setMinHeight(40);
+                bl.setMinWidth(155);
                 bl.setText(room.getRoomName());
                 bl.setOnAction((ActionEvent event1) -> openNewChat(room));
                 Platform.runLater(() -> RoomList.getChildren().add(bl));
@@ -291,6 +399,8 @@ public class ChatController {
             });
             for (String user1 : user.getConnectedUsers()) {
                 Button bl = new Button();
+                bl.setMinHeight(40);
+                bl.setMinWidth(155);
                 bl.setText(user1);
                 Platform.runLater(() -> UserList.getChildren().add(bl));
             }
