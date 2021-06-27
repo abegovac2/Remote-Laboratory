@@ -297,7 +297,7 @@ public class ChatController {
         newChatStage.setResizable(false);
 
         final Parent[] roots = {null};
-        currRoom.setText("Current room: " + room.getRoomName());
+
 
         Task<Boolean> loadingTask = new Task<Boolean>() {
             @Override
@@ -307,6 +307,7 @@ public class ChatController {
                 } catch (MqttException e) {
                     e.printStackTrace();
                 }
+              //  Platform.runLater(()->{currRoom.setText("Current room: " + room.getRoomName());});
                 if (user.getLast10().get(user.getLast10().size() - 1).getId() == -404) return false;
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
                 ChatController chat = new ChatController(user, room);
