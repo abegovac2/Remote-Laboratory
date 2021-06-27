@@ -28,5 +28,7 @@
     <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.21.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20210307" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-media:17-ea+13" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-media:win:17-ea+13" level="project" />
   </component>
 </module>

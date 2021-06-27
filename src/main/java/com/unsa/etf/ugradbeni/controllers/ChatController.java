@@ -13,7 +13,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.ColumnConstraints;
@@ -23,7 +28,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -31,10 +35,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.sound.sampled.*;
-import java.io.File;
+import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -79,33 +81,25 @@ public class ChatController {
     private final Room currentRoom;
     private int brojPoruke = 0;
     private GridPane chat = new GridPane();
-    private ArrayList<String> listOfSounds = new ArrayList<String>();
-    private File f = new File("");
+    private boolean sound = true;
 
     @FXML
     public void initialize() {
-        listOfSounds.add("src/main/resources/sounds/definite-555.wav");
-        listOfSounds.add("src/main/resources/sounds/graceful-558.wav");
-        listOfSounds.add("src/main/resources/sounds/quite-impressed-565.wav");
-        listOfSounds.add("src/main/resources/sounds/to-the-point-568.wav");
 
-        f = new File("src/main/resources/sounds/definite-555.wav");
 
-        for (int i = 0; i < 4; i++) {
-            MenuItem mnit = new MenuItem("Sound " + (i + 1));
-            mnit.setOnAction(event -> {
-                f = new File(listOfSounds.get(Integer.parseInt(mnit.getText().substring(6, 7)) - 1));
-                try {
-                    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(f);
-                    Clip clip = AudioSystem.getClip();
-                    clip.open(audioInputStream);
-                    clip.start();
-                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
-                    e.printStackTrace();
-                }
-            });
-            messageSounds.getItems().add(mnit);
-        }
+        MenuItem mnit = new MenuItem("Turn off sound");
+        mnit.setOnAction(event -> {
+            if(sound){
+                sound = false;
+                mnit.setText("Turn on sound");
+            }else{
+                sound = true;
+                mnit.setText("Turn off sound");
+            }
+        });
+        messageSounds.getItems().add(mnit);
+
+
 
 
         currRoom.setText("Current room: " + currentRoom.getRoomName());
@@ -291,13 +285,8 @@ public class ChatController {
 //                        System.out.println("currUser: " + user.getUserName());
 
 
-                        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(f);
-                        Clip clip = AudioSystem.getClip();
-                        clip.open(audioInputStream);
-
-
-                        if (!user.getUserName().equals(text.substring(text.indexOf("[") + 1, text.indexOf("]"))))
-                            clip.start();
+                        if (sound && !user.getUserName().equals(text.substring(text.indexOf("[") + 1, text.indexOf("]"))))
+                            Toolkit.getDefaultToolkit().beep();
 
 
                         String mess = "";
@@ -323,7 +312,7 @@ public class ChatController {
                         x.getChildren().add(bl);
 
                         Platform.runLater(() -> chat.addRow(brojPoruke++, x));
-                    } catch (JSONException | UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }).start();
