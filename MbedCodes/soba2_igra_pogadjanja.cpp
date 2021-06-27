@@ -3,13 +3,13 @@
 // SOBA2: Fun room
 //
 
-#define SUBSETUP "project225883/us/etf/message/soba2/mbed/info"
-#define SUBGUESS "project225883/us/etf/message/soba2/mbed/portguess"
-#define SUBRUNNINGTIME "project225883/us/etf/message/soba2/mbed/porttimewant"
+#define SUBSETUP "project225883/us/etf/message/FunRoom/mbed/info"
+#define SUBGUESS "project225883/us/etf/message/FunRoom/mbed/portguess"
+#define SUBRUNNINGTIME "project225883/us/etf/message/FunRoom/mbed/porttimewant"
 
-#define PUBSETUP "project225883/us/etf/message/soba2/mbed"
-#define PUBGAMEINFO "project225883/us/etf/message/soba2/mbed"
-#define PUBRUNNINGTIME "project225883/us/etf/message/soba2/mbed/time"
+#define PUBSETUP "project225883/us/etf/message/FunRoom/mbed"
+#define PUBGAMEINFO "project225883/us/etf/message/FunRoom/mbed"
+#define PUBRUNNINGTIME "project225883/us/etf/message/FunRoom/mbed/time"
 
 #include "mbed.h"
 #include <stdlib.h>
