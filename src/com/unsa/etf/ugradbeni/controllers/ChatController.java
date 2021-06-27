@@ -29,7 +29,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +84,6 @@ public class ChatController {
         scrollChat.setContent(chat);
         scrollChat.setFitToWidth(true);
 
-
         chat.heightProperty().addListener(observable -> scrollChat.setVvalue(1D));
 
         try {
@@ -100,20 +98,18 @@ public class ChatController {
 
             String text = last10.get(i).getMessage();
             String mess = "";
-            if(text.length() > 40)
-            {
-                for(int j=0; j < text.length()-40; j+=40){
-                    mess+=text.substring(j,j+40)+"\n";
+            if (text.length() > 40) {
+                for (int j = 0; j < text.length() - 40; j += 40) {
+                    mess += text.substring(j, j + 40) + "\n";
                 }
-            }
-            else
+            } else
                 mess = text;
             bl.setText(mess);
 
-            GridPane.setHalignment(bl,   HPos.LEFT );
+            GridPane.setHalignment(bl, HPos.LEFT);
 
             Image img = new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR277JJUkU44zs2ln_Bw37bt5V_gY-XWpF3HQ&usqp=CAU");
-            Circle cir2 = new Circle(40,30,20);
+            Circle cir2 = new Circle(40, 30, 20);
             cir2.setStroke(Color.SEAGREEN);
             cir2.setFill(Color.SNOW);
             cir2.setEffect(new DropShadow(+4d, 0d, +2d, Color.DARKSEAGREEN));
@@ -126,20 +122,7 @@ public class ChatController {
 
             chat.addRow(brojPoruke++, x);
 
-
-
-
-
-
-//            Button bl = new Button();
-//            bl.setText(last10.get(i).getMessage());
-            //  ChatList.getChildren().add(bl);
         }
-//        for (int i = last10.size() - 1; i >= 0; --i) {
-//            Button bl = new Button();
-//            bl.setText(last10.get(i).getMessage());
-//            ChatList.getChildren().add(bl);
-//        }
 
         for (String user1 : user.getConnectedUsers()) {
             Button bl = new Button();
@@ -172,7 +155,6 @@ public class ChatController {
         this.currentRoom = room;
         currentChatTopic = "" + ThemesMqtt.BASE + ThemesMqtt.MESSAGE + "/" + this.currentRoom.getRoomName();
     }
-
 
     @FXML
     public void sendAction(ActionEvent actionEvent) {
@@ -246,31 +228,27 @@ public class ChatController {
         MqttOnRecive recive = (String theme, MqttMessage mqttMessage) ->
                 new Thread(() -> {
                     try {
-                        if(theme.endsWith("info")) return;
+                        if (theme.endsWith("info")) return;
 
                         BubbledLabel bl = new BubbledLabel();
                         bl.getStyleClass().add("chat-bubble");
 
                         JSONObject msg = new JSONObject(new String(mqttMessage.getPayload()));
 
-                        System.out.println(msg);
-
                         String text = msg.getString("Message");
                         String mess = "";
-                        if(text.length() > 40)
-                        // mess = text.substring(0,15) + "\n" + text.substring(15);
+                        if (text.length() > 40)
                         {
-                            for(int i=0; i < text.length()-40; i+=40){
-                                mess+=text.substring(i,i+40)+"\n";
+                            for (int i = 0; i < text.length() - 40; i += 40) {
+                                mess += text.substring(i, i + 40) + "\n";
                             }
-                        }
-                        else
+                        } else
                             mess = text;
                         bl.setText(mess);
-                        GridPane.setHalignment(bl,   HPos.LEFT );
-//
+                        GridPane.setHalignment(bl, HPos.LEFT);
+
                         Image img = new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR277JJUkU44zs2ln_Bw37bt5V_gY-XWpF3HQ&usqp=CAU");
-                        Circle cir2 = new Circle(40,30,20);
+                        Circle cir2 = new Circle(40, 30, 20);
                         cir2.setStroke(Color.SEAGREEN);
                         cir2.setFill(Color.SNOW);
                         cir2.setEffect(new DropShadow(+4d, 0d, +2d, Color.DARKSEAGREEN));
@@ -298,7 +276,6 @@ public class ChatController {
 
         final Parent[] roots = {null};
 
-
         Task<Boolean> loadingTask = new Task<Boolean>() {
             @Override
             protected Boolean call() {
@@ -307,7 +284,6 @@ public class ChatController {
                 } catch (MqttException e) {
                     e.printStackTrace();
                 }
-              //  Platform.runLater(()->{currRoom.setText("Current room: " + room.getRoomName());});
                 if (user.getLast10().get(user.getLast10().size() - 1).getId() == -404) return false;
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
                 ChatController chat = new ChatController(user, room);
@@ -363,6 +339,7 @@ public class ChatController {
     public void closeWindow() {
         ((Stage) chat.getScene().getWindow()).close();
     }
+
     public void closeAction() {
         ((Stage) chat.getScene().getWindow()).close();
         user.disconnectUser();
