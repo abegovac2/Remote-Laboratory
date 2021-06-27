@@ -1,23 +1,5 @@
 
-e
-5out/production/RemoteLaboratory/views/ChatWindow.fxml,8\1\816fd4fc4b9182ea24547fcaa3d4cd676ebf046c
-b
-2out/production/RemoteLaboratory/css/dark-theme.css,a\d\ad448d2665ec0b8d5b8cd54f6b3cea4c70a96ae7
 G
 .idea/libraries/lib.xml,5\6\563a23e064e6fdd2d09bd0c2d99ef456aff71a31
 D
 RemoteLaboratory.iml,5\3\53716a931badcc3ebcaa7026bbbfcffe0ec5e482
-[
-+src/com/unsa/etf/ugradbeni/models/Room.java,a\9\a91d9b4a216b167783f277317101d794e7ecd1a1
-^
-.src/com/unsa/etf/ugradbeni/models/Message.java,8\d\8d0ff6b911649be20fcd3f6ed2f4dd24b08b0d19
-T
-$src/com/unsa/etf/ugradbeni/Main.java,7\b\7baa282bdb62c387d901baefacc49f450cef9372
-\
-,src/com/unsa/etf/ugradbeni/StageHandler.java,e\d\ed15d024ebc07c01537b72bde482a5c537e8fd4f
-k
-;src/com/unsa/etf/ugradbeni/controllers/LoginController.java,b\9\b9d416d780c8f0a592109f1e91167501c27c6b7f
-`
-0src/com/unsa/etf/ugradbeni/alert/AlertMaker.java,9\9\9941e4b987d52fd6889af83d9d3b69bb41021a8b
-j
-:src/com/unsa/etf/ugradbeni/controllers/ChatController.java,6\3\6361f196706a66a1e44f2b53bf8887412b1163aa

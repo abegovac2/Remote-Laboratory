@@ -1,14 +1,0 @@
-
-X
-java:S2696K"6Make the enclosing method "static" or remove this set.(ÜïÊ°ÿÿÿÿÿ8úÜ•ˆ¢/
-£
-java:S1186*"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(¦¯ÇÑÿÿÿÿÿ8À¡€‡¢/
-c
-java:S2142c"FEither re-interrupt this method or rethrow the "InterruptedException".(ä ¹€8À¡€‡¢/
-q
-java:S1104"TMake username a static final constant or non-public and provide accessors if needed.(Ÿ’—î8Ñœˆ¢/
-W
-java:S1128"5Remove this unused import 'java.util.ResourceBundle'.(ıÆ£¯øÿÿÿÿ8À¡€‡¢/
-]	java:S125y"<This block of commented-out lines of code should be removed.(‹È±…ıÿÿÿÿ8À¡€‡¢/
-K
-java:S1444".Make this "public static username" field final(Ÿ’—î8ÇŒ’ˆ¢/

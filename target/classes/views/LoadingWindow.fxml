@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="568.0" prefWidth="815.0" style="-fx-background-color: #2A2E37;"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <ProgressIndicator layoutX="353.0" layoutY="228.0" prefHeight="80.0" prefWidth="110.0"/>
+    </children>
+</AnchorPane>

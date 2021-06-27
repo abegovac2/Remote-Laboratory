@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="568.0" prefWidth="815.0" style="-fx-background-color: #2A2E37;" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="161.0" minWidth="10.0" prefWidth="161.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="488.0" minWidth="10.0" prefWidth="471.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="161.0" minWidth="10.0" prefWidth="161.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="446.0" minHeight="10.0" prefHeight="443.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="206.0" minHeight="10.0" prefHeight="48.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <Button fx:id="SendMessage" defaultButton="true" mnemonicParsing="false" onAction="#sendAction" prefHeight="29.0" prefWidth="134.0" stylesheets="@../css/dark-theme.css" text="Send" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+            <GridPane.margin>
+                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+            </GridPane.margin>
+            <padding>
+                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+            </padding>
+        </Button>
+        <ScrollPane hbarPolicy="NEVER" prefHeight="412.0" prefWidth="203.0" style="-fx-background-color: #FFFF8D;" vbarPolicy="NEVER" GridPane.rowIndex="2">
+            <content>
+                <VBox fx:id="RoomList" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="451.0" prefWidth="161.0" spacing="5.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css">
+                    <children>
+                        <Button fx:id="btnRoomRefresh" mnemonicParsing="false" onAction="#roomRefresh" prefHeight="40.0" prefWidth="100.0" text="Refresh" />
+                    </children>
+                    <padding>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                    </padding></VBox>
+            </content>
+        </ScrollPane>
+        <ScrollPane fx:id="scrollChat" pannable="true" prefHeight="200.0" prefWidth="800.0" style="fx-border-color: transparent;" stylesheets="@../css/dark-theme.css" vvalue="1.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FFFF8D;" vbarPolicy="NEVER" GridPane.columnIndex="2" GridPane.rowIndex="2">
+            <content>
+                <VBox fx:id="UserList" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="451.0" prefWidth="161.0" spacing="5.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css">
+                    <children>
+                        <Button fx:id="btnUsersRefresh" mnemonicParsing="false" onAction="#userRefresh" prefHeight="40.0" prefWidth="100.0" text="Refresh" />
+                    </children>
+                    <padding>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                    </padding></VBox>
+            </content>
+        </ScrollPane>
+        <Label fx:id="currRoom" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" textFill="WHITE" wrapText="true" GridPane.rowIndex="3" />
+        <MenuBar stylesheets="@../css/dark-theme.css" GridPane.columnSpan="2">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                  <Menu fx:id="messageSounds" mnemonicParsing="false" text="Message sounds" />
+                        <MenuItem mnemonicParsing="false" onAction="#closeAction" text="Close" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#aboutWind" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.columnIndex="2">
+            <children>
+                <ImageView fitHeight="33.0" fitWidth="40.0" opacity="0.23" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../pictures/user.jpg" />
+                    </image>
+                </ImageView>
+                <Label fx:id="usernameLbl" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="33.0" prefWidth="129.0" textFill="WHITE">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+            </children>
+            <padding>
+                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+            </padding>
+            <GridPane.margin>
+                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+            </GridPane.margin>
+        </HBox>
+        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <children>
+                <TextField fx:id="MessageField" layoutX="7.0" layoutY="4.0" prefHeight="37.0" prefWidth="459.0" promptText="type text" />
+            </children>
+        </AnchorPane>
+      <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #993366;" textAlignment="CENTER" textFill="WHITE" GridPane.rowIndex="1">
+         <graphic>
+            <Text fill="WHITE" stroke="#dde419" strokeType="OUTSIDE" strokeWidth="0.3" text="ROOMS">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Text>
+         </graphic>
+      </Label>
+      <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #993366;" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <graphic>
+            <Text fill="WHITE" stroke="#dde419" strokeType="OUTSIDE" strokeWidth="0.3" text="CHAT">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Text>
+         </graphic>
+      </Label>
+      <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #993366;" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="2" GridPane.rowIndex="1">
+         <graphic>
+            <Text fill="WHITE" stroke="#dde419" strokeType="OUTSIDE" strokeWidth="0.3" text="ONLINE USERS">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Text>
+         </graphic>
+      </Label>
+    </children>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+    </padding>
+</GridPane>
