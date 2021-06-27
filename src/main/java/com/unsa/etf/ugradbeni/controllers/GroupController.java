@@ -95,7 +95,6 @@ public class GroupController {
                     e.printStackTrace();
                 }
 
-
                 newChatStage.setOnCloseRequest((event) -> {
                     User.disconnectUser();
                     Platform.exit();

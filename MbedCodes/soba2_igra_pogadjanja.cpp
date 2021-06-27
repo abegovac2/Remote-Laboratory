@@ -153,18 +153,6 @@ int main(int argc, char* argv[])
     // QoS 0
     char buf[100];
     while(1) {
-        if (!gameon) {
-            if(winner!=-1) sprintf(buf, "{\"Message\": \"[Igra]: POBJEDNIK IGRAC: %d\"}", winner+1);
-            else sprintf(buf, "{\"Message\": \"Nerijeseno\"}");
-            message.qos = MQTT::QOS0;
-            message.retained = false;
-            message.dup = false;
-            message.payload = (void*)buf;
-            message.payloadlen = strlen(buf);
-            rc = client.publish(PUBGAMEINFO, message);
-            reset_game();
-            printf("Poslana info poruka o pobjedniku!\n");
-        }
         if(pause_game && gameon){
             sprintf(buf, "{\"Message\": \"__TRENUTNO STANJE__ \"}");
             message.qos = MQTT::QOS0;
@@ -188,7 +176,7 @@ int main(int argc, char* argv[])
                 message.payloadlen = strlen(buf);
                 rc = client.publish(PUBGAMEINFO, message);
                 
-                wait(0.1);
+                wait(0.5);
             }
                 sprintf(buf, "{\"Message\": \"(!) Igrac 1: %d pogodjenih\"}", hits[0]);
                 message.qos = MQTT::QOS0;
@@ -230,6 +218,18 @@ int main(int argc, char* argv[])
             rc = client.publish(PUBSETUP, message);
             printf("Poslana info poruka!\n");
         }    
+        if (!gameon) {
+            if(winner!=-1) sprintf(buf, "{\"Message\": \"[Igra]: POBJEDNIK IGRAC: %d\"}", winner+1);
+            else sprintf(buf, "{\"Message\": \"Nerijeseno\"}");
+            message.qos = MQTT::QOS0;
+            message.retained = false;
+            message.dup = false;
+            message.payload = (void*)buf;
+            message.payloadlen = strlen(buf);
+            rc = client.publish(PUBGAMEINFO, message);
+            reset_game();
+            printf("Poslana info poruka o pobjedniku!\n");
+        }
         
         rc = client.subscribe(SUBSETUP, MQTT::QOS0, subsetup_fun);
         rc = client.subscribe(SUBGUESS, MQTT::QOS0, guessing);

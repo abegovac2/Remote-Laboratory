@@ -290,23 +290,18 @@ public class User {
 
     public boolean checkForDuplicateUsernames(String username) {
         AtomicBoolean isTaken = new AtomicBoolean(false);
-//        MessagingClient user = null;
         String check, taken;
         try {
             Map<String, MqttOnRecive> mapOfFunctions = userClient.getOnReciveMap();
             mapOfFunctions.put("taken", (String topic, MqttMessage mqttMessage) -> isTaken.set(true));
-//            user = new MessagingClient(UUID.randomUUID().toString(), mapOfFunctions);
 
             check = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.CHECK + "/" + username;
             taken = "" + ThemesMqtt.BASE + ThemesMqtt.USER + ThemesMqtt.TAKEN + "/" + username;
 
-//            user.subscribeToTopic(taken, null, 0);
             userClient.subscribeToTopic(taken, null, 0);
-//            user.sendMessage(check, "{}", 0);
             userClient.sendMessage(check, "{}", 0);
             //waits 2sec to get a response
             Thread.sleep(2000);
-//            user.unsubscribeFromTopic(taken, null);
             userClient.unsubscribeFromTopic(taken, null);
 
             mapOfFunctions.remove("taken");
