@@ -46,6 +46,7 @@ void subsetup_fun(MQTT::MessageData& md){ // user requires info
 void reset_game(){ // reset all values to default
     winner=-1;
     gameon=true;
+    pause_game=false;
     playing=0;
     attempts[0]=0, attempts[1]=0;
     hits[0]=0, hits[1]=0;
@@ -195,6 +196,7 @@ int main(int argc, char* argv[])
                 rc = client.publish(PUBGAMEINFO, message);
             pause_game=false;
             printf("Poslana info poruka o stats!\n");
+
         }
         if(mqqt_wants_time){ // system running time info
             mqqt_wants_time=false;
@@ -219,8 +221,24 @@ int main(int argc, char* argv[])
             printf("Poslana info poruka!\n");
         }    
         if (!gameon) { // game over, displaying name of the winner
+                sprintf(buf, "{\"Message\": \"(GameOver) Igrac 1: %d pogodjenih\"}", hits[0]);
+                message.qos = MQTT::QOS0;
+                message.retained = false;
+                message.dup = false;
+                message.payload = (void*)buf;
+                message.payloadlen = strlen(buf);
+                rc = client.publish(PUBGAMEINFO, message);
+                
+                sprintf(buf, "{\"Message\": \"(GameOver)Igrac 2: %d pogodjenih\"}", hits[1]);
+                message.qos = MQTT::QOS0;
+                message.retained = false;
+                message.dup = false;
+                message.payload = (void*)buf;
+                message.payloadlen = strlen(buf);
+                rc = client.publish(PUBGAMEINFO, message);
+            wait(2);
             if(winner!=-1) sprintf(buf, "{\"Message\": \"[Igra]: POBJEDNIK IGRAC: %d\"}", winner+1);
-            else sprintf(buf, "{\"Message\": \"Nerijeseno\"}");
+            else sprintf(buf, "{\"Message\": \"[Igra]: Nerijeseno\"}");
             message.qos = MQTT::QOS0;
             message.retained = false;
             message.dup = false;
