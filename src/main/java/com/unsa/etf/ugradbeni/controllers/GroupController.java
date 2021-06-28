@@ -29,7 +29,7 @@ import static javafx.scene.control.PopupControl.USE_COMPUTED_SIZE;
 
 public class GroupController {
     @FXML
-    public Label user;
+    public Label userLabel;
 
     @FXML
     public FlowPane pane;
@@ -37,17 +37,18 @@ public class GroupController {
     @FXML
     public TextField date;
 
-    private DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
-    private com.unsa.etf.ugradbeni.models.User User;
+    private final DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
+    private final User user;
 
 
     @FXML
     public void initialize() {
         date.setText(LocalDate.now().format(myFormatObj));
-        user.setText(User.getUserName());
+        userLabel.setText(user.getUserName());
 
-        List<Room> rooms = new ArrayList<>(User.getActiveRooms());
+        List<Room> rooms = new ArrayList<>(user.getActiveRooms());
 
+        //lists out all available rooms and adds the functionality to open a new room
         for (Room room : rooms) {
             Button group = new Button(room.getRoomName());
             group.setMinWidth(200);
@@ -59,7 +60,7 @@ public class GroupController {
     }
 
     public GroupController(User user) {
-        this.User = user;
+        this.user = user;
     }
 
     public void openNewChat(Room room) {
@@ -75,13 +76,15 @@ public class GroupController {
             @Override
             protected Boolean call() {
                 try {
-                    User.getMessagesForRoom(room);
+                    user.getMessagesForRoom(room);
                 } catch (MqttException e) {
                     e.printStackTrace();
                 }
-                if (User.getLast10().get(User.getLast10().size() - 1).getId() == -404) return false;
+                //check to see if the selected room was deleted
+                if (user.getLast10().get(user.getLast10().size() - 1).getId() == -404) return false;
+
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
-                ChatController chat = new ChatController(User, room);
+                ChatController chat = new ChatController(user, room);
                 loader.setController(chat);
 
                 try {
@@ -96,7 +99,7 @@ public class GroupController {
                 }
 
                 newChatStage.setOnCloseRequest((event) -> {
-                    User.disconnectUser();
+                    user.disconnectUser();
                     Platform.exit();
                 });
 
@@ -132,7 +135,7 @@ public class GroupController {
     }
 
     public void closeWindow() {
-        ((Stage) user.getScene().getWindow()).close();
+        ((Stage) userLabel.getScene().getWindow()).close();
     }
 
 

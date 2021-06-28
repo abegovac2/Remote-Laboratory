@@ -19,11 +19,10 @@ public enum ThemesMqtt {
     USER_REFRESH_SEND("/user/refresh/send"),
     USER_REFRESH_RECIVE("/user/refresh/recive"),
 
-    //trebaju jos za mbed
     SEND_INFO("/mbed/info");
 
 
-    private String value;
+    private final String value;
 
     ThemesMqtt(String value) {
         this.value = value;

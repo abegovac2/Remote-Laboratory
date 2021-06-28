@@ -47,10 +47,10 @@ public class ChatController {
     public Label currRoom;
 
     @FXML
-    public VBox UserList;
+    public VBox userList;
 
     @FXML
-    public VBox RoomList;
+    public VBox roomList;
 
     @FXML
     public Button SendMessage;
@@ -80,27 +80,23 @@ public class ChatController {
     private final List<Message> last10;
     private final Room currentRoom;
     private int brojPoruke = 0;
-    private GridPane chat = new GridPane();
+    private GridPane Chat = new GridPane();
     private boolean sound = true;
 
     @FXML
     public void initialize() {
 
-
         MenuItem mnit = new MenuItem("Turn off sound");
         mnit.setOnAction(event -> {
-            if(sound){
+            if (sound) {
                 sound = false;
                 mnit.setText("Turn on sound");
-            }else{
+            } else {
                 sound = true;
                 mnit.setText("Turn off sound");
             }
         });
         messageSounds.getItems().add(mnit);
-
-
-
 
         currRoom.setText("Current room: " + currentRoom.getRoomName());
 
@@ -108,17 +104,17 @@ public class ChatController {
         usernameLbl.setText(user.getUserName());
         MessageField.textProperty().bindBidirectional(messageContent);
 
-        chat.setStyle("-fx-background-color: #2A2E37");
-        chat.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        chat.setVgap(5.);
+        Chat.setStyle("-fx-background-color: #2A2E37");
+        Chat.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        Chat.setVgap(5.);
         ColumnConstraints c1 = new ColumnConstraints();
         c1.setPercentWidth(800);
-        chat.getColumnConstraints().add(c1);
-        scrollChat.setContent(chat);
+        Chat.getColumnConstraints().add(c1);
+        scrollChat.setContent(Chat);
         scrollChat.setFitToWidth(true);
 
 
-        chat.heightProperty().addListener(observable -> scrollChat.setVvalue(1D));
+        Chat.heightProperty().addListener(observable -> scrollChat.setVvalue(1D));
 
         try {
             chatUserSetup();
@@ -126,56 +122,22 @@ public class ChatController {
             e.printStackTrace();
         }
 
+        //adds last 10 messages to the chat
         for (int i = last10.size() - 1; i >= 0; --i) {
-            BubbledLabel bl = new BubbledLabel();
-            bl.getStyleClass().add("chat-bubble");
-
-            String text = last10.get(i).getMessage();
-            String mess = "";
-            if (text.length() > 50) {
-                int x = (int)(Math.ceil(text.length() / 50));
-                x++;
-                int j = 0;
-                while(x!=0){
-                    if(j+50 > text.length())
-                        mess += text.substring(j) + "\n";
-                    else
-                        mess += text.substring(j, j + 50) + "\n";
-                    j+=50;
-                    x--;
-                }
-            } else
-                mess = text;
-            bl.setText(mess);
-
-            GridPane.setHalignment(bl, HPos.LEFT);
-
-            Image img = new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR277JJUkU44zs2ln_Bw37bt5V_gY-XWpF3HQ&usqp=CAU");
-            Circle cir2 = new Circle(40, 30, 20);
-            cir2.setStroke(Color.SEAGREEN);
-            cir2.setFill(Color.SNOW);
-            cir2.setEffect(new DropShadow(+4d, 0d, +2d, Color.DARKSEAGREEN));
-            cir2.setFill(new ImagePattern(img));
-
-            HBox x = new HBox();
-            x.setSpacing(3);
-            x.getChildren().add(cir2);
-            x.getChildren().add(bl);
-
-            chat.addRow(brojPoruke++, x);
-
-
+            HBox message = createNewMessageForWindow(last10.get(i).getMessage());
+            Chat.addRow(brojPoruke++, message);
         }
 
-
+        //to add users to the list of active users
         for (String user1 : user.getConnectedUsers()) {
             Button bl = new Button();
             bl.setText(user1);
             bl.setMinHeight(40);
             bl.setMinWidth(155);
-            UserList.getChildren().add(bl);
+            userList.getChildren().add(bl);
         }
 
+        //to add currently avalable rooms
         for (Room room : user.getActiveRooms()) {
             if (room.equals(currentRoom)) continue;
             Button bl = new Button();
@@ -183,11 +145,11 @@ public class ChatController {
             bl.setMinWidth(155);
             bl.setText(room.getRoomName());
             bl.setOnAction((ActionEvent event) -> openNewChat(room));
-            RoomList.getChildren().add(bl);
+            roomList.getChildren().add(bl);
         }
 
         try {
-            user.setupConnectDisconnect(UserList);
+            user.setupConnectDisconnect(userList);
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -202,7 +164,7 @@ public class ChatController {
 
 
     @FXML
-    public void aboutWind(ActionEvent actionEvent){
+    public void aboutWindow(ActionEvent actionEvent) {
         StageHandler.openNewWindow(getClass().getResource("/views/AboutWindow.fxml"), "Remote Laboratory", new AboutAppController());
     }
 
@@ -210,7 +172,7 @@ public class ChatController {
     @FXML
     public void sendAction(ActionEvent actionEvent) {
         String message = messageContent.get().trim();
-        System.out.println("DUZINA PORUKE: " + message.length());
+
         if (message.length() > 255) {
             AlertMaker.alertINFORMATION("Notice", "Message can't have more than 255 character.");
             return;
@@ -219,6 +181,7 @@ public class ChatController {
             AlertMaker.alertERROR("", "Message field is empty!");
             return;
         }
+
         messageContent.set("");
 
         if (message.startsWith("!port")) sendToMbed(message);
@@ -281,53 +244,11 @@ public class ChatController {
                     try {
                         if (theme.endsWith("info")) return;
 
-                        BubbledLabel bl = new BubbledLabel();
-                        bl.getStyleClass().add("chat-bubble");
-
                         JSONObject msg = new JSONObject(new String(mqttMessage.getPayload()));
-
                         String text = msg.getString("Message");
+                        HBox message = createNewMessageForWindow(text);
 
-//                        System.out.println("poruka: " + text);
-//                        System.out.println("SUBSTR: "+ text.substring(text.indexOf("[")+1,text.indexOf("]")));
-//                        System.out.println("currUser: " + user.getUserName());
-
-
-                        if (sound && !user.getUserName().equals(text.substring(text.indexOf("[") + 1, text.indexOf("]"))))
-                            Toolkit.getDefaultToolkit().beep();
-
-
-                        String mess = "";
-                        if (text.length() > 50) {
-                            int x = (int)(Math.ceil(text.length() / 50));
-                            x++;
-                            int j = 0;
-                            while(x!=0){
-                                if(j+50 > text.length())
-                                    mess += text.substring(j  ) + "\n";
-                                else
-                                    mess += text.substring(j, j + 50) + "\n";
-                                j+=50;
-                                x--;
-                            }
-                        } else
-                            mess = text;
-                        bl.setText(mess);
-                        GridPane.setHalignment(bl, HPos.LEFT);
-
-                        Image img = new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR277JJUkU44zs2ln_Bw37bt5V_gY-XWpF3HQ&usqp=CAU");
-                        Circle cir2 = new Circle(40, 30, 20);
-                        cir2.setStroke(Color.SEAGREEN);
-                        cir2.setFill(Color.SNOW);
-                        cir2.setEffect(new DropShadow(+4d, 0d, +2d, Color.DARKSEAGREEN));
-                        cir2.setFill(new ImagePattern(img));
-
-                        HBox x = new HBox();
-                        x.setSpacing(3);
-                        x.getChildren().add(cir2);
-                        x.getChildren().add(bl);
-
-                        Platform.runLater(() -> chat.addRow(brojPoruke++, x));
+                        Platform.runLater(() -> Chat.addRow(brojPoruke++, message));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -336,6 +257,46 @@ public class ChatController {
         functions.put("message", recive);
         functions.put(currentRoom.getRoomName(), recive);
         functions.put("mbed", recive);
+    }
+
+    private HBox createNewMessageForWindow(String text) {
+        BubbledLabel bl = new BubbledLabel();
+        bl.getStyleClass().add("chat-bubble");
+
+        if (sound && text.contains("[") && text.contains("]") && !user.getUserName().equals(text.substring(text.indexOf("[") + 1, text.indexOf("]"))))
+            Toolkit.getDefaultToolkit().beep();
+
+        String message = "";
+        if (text.length() > 50) {
+            int x = (int) (Math.ceil(text.length() / 50));
+            x++;
+            int j = 0;
+            while (x != 0) {
+                if (j + 50 > text.length())
+                    message += text.substring(j) + "\n";
+                else
+                    message += text.substring(j, j + 50) + "\n";
+                j += 50;
+                x--;
+            }
+        } else
+            message = text;
+        bl.setText(message);
+        GridPane.setHalignment(bl, HPos.LEFT);
+
+        Image img = new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR277JJUkU44zs2ln_Bw37bt5V_gY-XWpF3HQ&usqp=CAU");
+        Circle cir2 = new Circle(40, 30, 20);
+        cir2.setStroke(Color.SEAGREEN);
+        cir2.setFill(Color.SNOW);
+        cir2.setEffect(new DropShadow(+4d, 0d, +2d, Color.DARKSEAGREEN));
+        cir2.setFill(new ImagePattern(img));
+
+        HBox messageBox = new HBox();
+        messageBox.setSpacing(3);
+        messageBox.getChildren().add(cir2);
+        messageBox.getChildren().add(bl);
+
+        return messageBox;
     }
 
     public void openNewChat(Room room) {
@@ -347,7 +308,6 @@ public class ChatController {
 
         final Parent[] roots = {null};
 
-
         Task<Boolean> loadingTask = new Task<Boolean>() {
             @Override
             protected Boolean call() {
@@ -356,7 +316,9 @@ public class ChatController {
                 } catch (MqttException e) {
                     e.printStackTrace();
                 }
+                //check to see if the selected room was deleted
                 if (user.getLast10().get(user.getLast10().size() - 1).getId() == -404) return false;
+
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ChatWindow.fxml"));
                 ChatController chat = new ChatController(user, room);
                 loader.setController(chat);
@@ -409,11 +371,11 @@ public class ChatController {
     }
 
     public void closeWindow() {
-        ((Stage) chat.getScene().getWindow()).close();
+        ((Stage) Chat.getScene().getWindow()).close();
     }
 
     public void closeAction() {
-        ((Stage) chat.getScene().getWindow()).close();
+        ((Stage) Chat.getScene().getWindow()).close();
         user.disconnectUser();
         Platform.exit();
     }
@@ -423,8 +385,8 @@ public class ChatController {
         new Thread(() -> {
             user.refreshActiveRooms();
             Platform.runLater(() -> {
-                RoomList.getChildren().clear();
-                RoomList.getChildren().add(btnRoomRefresh);
+                roomList.getChildren().clear();
+                roomList.getChildren().add(btnRoomRefresh);
             });
             for (Room room : user.getActiveRooms()) {
                 if (room.equals(currentRoom)) continue;
@@ -433,26 +395,25 @@ public class ChatController {
                 bl.setMinWidth(155);
                 bl.setText(room.getRoomName());
                 bl.setOnAction((ActionEvent event1) -> openNewChat(room));
-                Platform.runLater(() -> RoomList.getChildren().add(bl));
+                Platform.runLater(() -> roomList.getChildren().add(bl));
             }
         }).start();
-
     }
 
     @FXML
-    public void userRefresh(ActionEvent event) {
+    public void onlineUserRefresh(ActionEvent event) {
         new Thread(() -> {
             user.refreshConnectedUsers();
             Platform.runLater(() -> {
-                UserList.getChildren().clear();
-                UserList.getChildren().add(btnUsersRefresh);
+                userList.getChildren().clear();
+                userList.getChildren().add(btnUsersRefresh);
             });
             for (String user1 : user.getConnectedUsers()) {
                 Button bl = new Button();
                 bl.setMinHeight(40);
                 bl.setMinWidth(155);
                 bl.setText(user1);
-                Platform.runLater(() -> UserList.getChildren().add(bl));
+                Platform.runLater(() -> userList.getChildren().add(bl));
             }
         }).start();
     }

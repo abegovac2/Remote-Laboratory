@@ -30,7 +30,7 @@
         </Button>
         <ScrollPane hbarPolicy="NEVER" prefHeight="412.0" prefWidth="203.0" style="-fx-background-color: #FFFF8D;" vbarPolicy="NEVER" GridPane.rowIndex="2">
             <content>
-                <VBox fx:id="RoomList" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="451.0" prefWidth="161.0" spacing="5.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css">
+                <VBox fx:id="roomList" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="451.0" prefWidth="161.0" spacing="5.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css">
                     <children>
                         <Button fx:id="btnRoomRefresh" mnemonicParsing="false" onAction="#roomRefresh" prefHeight="40.0" prefWidth="100.0" text="Refresh" />
                     </children>
@@ -42,9 +42,9 @@
         <ScrollPane fx:id="scrollChat" pannable="true" prefHeight="200.0" prefWidth="800.0" style="fx-border-color: transparent;" stylesheets="@../css/dark-theme.css" vvalue="1.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FFFF8D;" vbarPolicy="NEVER" GridPane.columnIndex="2" GridPane.rowIndex="2">
             <content>
-                <VBox fx:id="UserList" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="451.0" prefWidth="161.0" spacing="5.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css">
+                <VBox fx:id="userList" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="451.0" prefWidth="161.0" spacing="5.0" style="-fx-background-color: #2A2E37;" stylesheets="@../css/dark-theme.css">
                     <children>
-                        <Button fx:id="btnUsersRefresh" mnemonicParsing="false" onAction="#userRefresh" prefHeight="40.0" prefWidth="100.0" text="Refresh" />
+                        <Button fx:id="btnUsersRefresh" mnemonicParsing="false" onAction="#onlineUserRefresh" prefHeight="40.0" prefWidth="100.0" text="Refresh" />
                     </children>
                     <padding>
                         <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
@@ -62,7 +62,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#aboutWind" text="About" />
+                        <MenuItem mnemonicParsing="false" onAction="#aboutWindow" text="About" />
                     </items>
                 </Menu>
             </menus>

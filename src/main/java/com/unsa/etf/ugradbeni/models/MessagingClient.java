@@ -2,9 +2,7 @@ package com.unsa.etf.ugradbeni.models;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
-import java.awt.*;
 import java.util.Map;
 
 public class MessagingClient implements MqttCallback {
@@ -22,10 +20,6 @@ public class MessagingClient implements MqttCallback {
     private static final String brokerURL = "tcp://broker.hivemq.com:1883";
     private final MqttClient mqttClient;
     private final String clientId;
-
-    public String getClientId() {
-        return clientId;
-    }
 
     public MessagingClient(String clientId, Map<String, MqttOnRecive> onReciveMap) throws MqttException {
         this.clientId = clientId;
@@ -70,11 +64,11 @@ public class MessagingClient implements MqttCallback {
         }
     }
 
+    //triggers every time a new message arrives
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) {
         synchronized (this.getClass()) {
-//            System.out.println("TOPIC: " + topic);
-//            Toolkit.getDefaultToolkit().beep();
+
             String[] splitTopic = topic.split("/");
             String key = splitTopic[splitTopic.length - 2];
 

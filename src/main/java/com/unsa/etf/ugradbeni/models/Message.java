@@ -1,9 +1,9 @@
 package com.unsa.etf.ugradbeni.models;
 
 public class Message {
-    private int id;
+    private final int id;
     private String message;
-    private int roomId;
+    private final int roomId;
 
     public Message(int id, String message, int roomId) {
         this.id = id;
@@ -15,24 +15,12 @@ public class Message {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getMessage() {
         return message;
     }
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public int getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(int roomId) {
-        this.roomId = roomId;
     }
 
     @Override
@@ -42,5 +30,9 @@ public class Message {
                 "\"Message\": \"" + message + "\" ," +
                 "\"RoomId\": " + roomId +
                 "}";
+    }
+
+    public int getRoomId() {
+        return roomId;
     }
 }

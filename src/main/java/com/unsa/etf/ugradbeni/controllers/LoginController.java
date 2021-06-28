@@ -83,7 +83,6 @@ public class LoginController {
             Task<Boolean> loadingTask = new Task<Boolean>() {
                 @Override
                 protected Boolean call() {
-                    //check other users
                     boolean isTaken = user.checkForDuplicateUsernames(username);
                     if (isTaken) return false;
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/GroupWindow.fxml"));

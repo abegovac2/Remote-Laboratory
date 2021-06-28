@@ -1,12 +1,10 @@
 package com.unsa.etf.ugradbeni.models;
 
-import org.json.JSONObject;
-
 import java.util.Objects;
 
 public class Room {
-    private int id;
-    private String roomName;
+    private final int id;
+    private final String roomName;
 
     public Room(int id, String roomName) {
         this.roomName = roomName;
@@ -17,16 +15,8 @@ public class Room {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getRoomName() {
         return roomName;
-    }
-
-    public void setRoomName(String roomName) {
-        this.roomName = roomName;
     }
 
     @Override

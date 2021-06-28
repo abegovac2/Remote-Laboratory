@@ -11,13 +11,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class User {
     private String userName;
     private MessagingClient userClient;
-    private MessagingClient chatClient;
     private Set<String> connectedUsers;
     private Set<Room> activeRooms;
     private List<Message> last10;
@@ -40,7 +38,7 @@ public class User {
             }
         });
 
-        //has to be immediately subscribed to, so we avoid a short period of time when the user is still connecting
+        //has to be immediately subscribed to the check topic so we avoid a short period of time when the user is still connecting
         userClient.subscribeToTopic(check, null, 0);
     }
 
@@ -48,8 +46,8 @@ public class User {
         String connected = "" + ThemesMqtt.BASE + ThemesMqtt.USER_CONNECTED;
         String disconnected = "" + ThemesMqtt.BASE + ThemesMqtt.USER_DISCONNECTED;
 
+        //every time a new user is connected he is added to a list of currently active users
         userClient.getOnReciveMap().put("connected", (String topic, MqttMessage mqttMessage) ->
-                //every time a new user is connected he is added to a list of currently active users
                 new Thread(() -> {
                     String[] topicParts = topic.split("/");
                     String userName = topicParts[topicParts.length - 1];
@@ -63,8 +61,8 @@ public class User {
                 }).start()
         );
 
+        //every time a user is disconnected he is omitted form the list of active users
         userClient.getOnReciveMap().put("disconnected", (String topic, MqttMessage mqttMessage) ->
-                //every time a user is disconnected he is omitted form the list of active users
                 new Thread(() -> {
                     String[] topicParts = topic.split("/");
                     String userName = topicParts[topicParts.length - 1];
@@ -114,6 +112,7 @@ public class User {
         userClient.subscribeToTopic(send, null, 0);
     }
 
+    //must be called for the user to have any functionality
     public void setupUserMqtt() throws MqttException {
         HashMap<String, MqttOnRecive> mapOfFunctions = new HashMap<>();
         userClient.setOnReciveMap(mapOfFunctions);
@@ -131,40 +130,12 @@ public class User {
         return connectedUsers;
     }
 
-    public void setConnectedUsers(Set<String> connectedUsers) {
-        this.connectedUsers = connectedUsers;
-    }
-
     public Set<Room> getActiveRooms() {
         return activeRooms;
     }
 
-    public void setActiveRooms(Set<Room> activeRooms) {
-        this.activeRooms = activeRooms;
-    }
-
     public String getUserName() {
         return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public MessagingClient getUserClient() {
-        return userClient;
-    }
-
-    public void setUserClient(MessagingClient userClient) {
-        this.userClient = userClient;
-    }
-
-    public MessagingClient getChatClient() {
-        return chatClient;
-    }
-
-    public void setChatClient(MessagingClient chatClient) {
-        this.chatClient = chatClient;
     }
 
     //call this function within another thread
@@ -242,10 +213,6 @@ public class User {
 
     public List<Message> getLast10() {
         return last10;
-    }
-
-    public void setLast10(List<Message> last10) {
-        this.last10 = last10;
     }
 
     //call this function within another thread
