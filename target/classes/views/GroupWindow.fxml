@@ -31,7 +31,7 @@
                         <Image url="@../pictures/user.jpg"/>
                     </image>
                 </ImageView>
-                <Label fx:id="user" alignment="CENTER" ellipsisString="" maxHeight="1.7976931348623157E308"
+                <Label fx:id="userLabel" alignment="CENTER" ellipsisString="" maxHeight="1.7976931348623157E308"
                        maxWidth="1.7976931348623157E308" prefHeight="33.0" prefWidth="116.0" textAlignment="CENTER"
                        textFill="WHITE" HBox.hgrow="ALWAYS">
                     <font>
